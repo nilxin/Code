@@ -1,0 +1,412 @@
+html,body,form{  
+	        height:100%; 
+	        margin: 0; 
+	    } 
+
+    	a{
+    		color:#8D8D8D;
+    		cursor: pointer;
+    		text-decoration: none;
+    	}
+    	a:active{
+    		color:#8D8D8D;
+    	}
+
+        a:hover{
+            color: #d30000;
+            text-decoration: underline;
+        }
+
+    	.pageStyle {
+    		width: 100%;
+    		height: auto;
+    		position: absolute;
+    		top: 0;
+    		bottom: 0;
+    		left: 0; 
+    		right: 0;
+    		background-color: #FBFBFB;
+            overflow: auto;
+            *overflow: none;
+    	}
+
+    	.main{
+    		width: 994px;
+    		height: auto;
+    	    margin: 20px auto 0 auto;
+    	    padding-top: 1px;
+    	    background-color: white;
+    	}
+
+    	.main-top{
+    		margin:6px;
+    		width: 982px;
+    		height: 183px;
+    		background: url(../images/banner_2.png) no-repeat center center;
+    	}
+
+    	.main-middle{
+		    text-align: center;
+		    margin-top: 30px;
+		    padding-top: 20px;
+		    background: url(../images/bg_02.png) repeat center center;
+		    height: auto !important;
+		    height: auto;
+		    min-height: 410px;
+		    overflow: auto;
+    	}
+
+    	.main-content{
+    		text-align: left;
+    		margin:0 110px;
+    		display: block;
+    	}
+    	
+    	.main-regBox{
+    		width:768px;
+    		height:227px;
+    		background: url(../images/table.png) no-repeat center center;
+    	}
+
+    	.main-codeDes{
+    		text-align: left;
+    		font-weight: 900;
+    		font-size: 12px;
+    		margin-top: 40px;
+    		margin-bottom: 80px;
+    	}
+    	
+    	.main-regBox-title{
+    		font-size: 13px;
+		    font-weight: 900;
+		    color: black;
+		    padding: 8px;
+		    text-indent: 10px;
+    	}
+
+    	/*亮照表格*/
+    	.main-table{
+    		display: none;
+    		text-align: left;
+    		margin:10px;
+            background: url(../images/table-big.png) no-repeat center center;
+            width:808px;
+            height: 557px;
+    	}
+
+    	.main-lincenseTitle{
+    		font-weight: 900;
+    		width: 642px;
+    		height: 36px;
+    		line-height: 36px;
+    		font-size: 16px;
+    		color: #000000;
+    		text-align: center;
+    		background: url(../images/table-title.png) no-repeat center center;
+    	}
+
+    	.info-table{
+    		margin-top: 10px;
+    		width: 642px;
+    		border-collapse:collapse;
+    		font-family: "微软雅黑";
+    		float: left;
+    	}
+
+        .lincenseTable{
+            height: 211px;
+            background: url(../images/bg1.png) no-repeat center center;
+        }
+
+        .siteTable{
+            height: 32px;
+            background: url(../images/singleTitle.png) no-repeat;
+        }
+
+        .siteInfo{
+        	height: auto;
+    		margin-top: 0;
+    		background: url(../images/1px.png) repeat-y;
+    		border-bottom: 1px solid #96b6d1;
+    		border-right: 1px solid #96b6d1;
+        }
+
+        .unitTable{
+        	height: 62px;
+        	background: url(../images/table-small.png) no-repeat center center;
+        	margin-bottom: 50px;
+        }
+
+        .table-title{
+            font-size:14px;
+            padding-left: 20px;
+        }
+
+        .table-bolidTitle{
+            color: black;
+            font-size: 13px;
+            text-align: center;
+            font-weight: 900;
+        }
+
+        .table-des{
+            padding-left: 10px;
+            font-size: 12px;
+            width: 500px;
+            height: 15px;
+        }
+
+    	.checkCodeForm{
+    		margin-left: 30px;
+		    font-size: 13px;
+		    font-weight: 500;
+		    color: black;
+		    font-family: "微软雅黑";
+    	}
+
+    	.inputArea{
+    		width: 120px;
+    		border: 1px solid #c5c5c5;
+		    border-radius: 6px;
+		    display: inline;
+		    float: left;
+		    margin-left: 10px
+    	}
+
+    	.imgRefresh{
+    		font-size: 11px;
+		    cursor: pointer;
+		    float: left;
+		    margin: 6px 0;
+		    width:80px;
+    	}
+
+    	.inputDes{
+    		float: left;
+    		margin: 6px 0px;
+    	}
+
+    	.codeInput{
+		    height: 26px;
+		    width: 80px;
+		    margin-left: 5px;
+		    border:none;
+		    float: left;
+		    line-height: 26px;
+		    text-indent: 15px;
+		    outline: none;
+		    letter-spacing: 5px;
+    	}
+
+    	.codeImage{
+    	    cursor: pointer;
+    		float: left;
+    		margin: 2px 6px;
+    	}
+
+    	.doCheck{
+    		background-color: #32B16C;
+    		height: 30px;
+    		line-height: 30px;
+    		width: 120px;
+    		border-radius: 6px;
+    		color: white;
+    		font-weight: 900;
+            float: left;
+    		border:none;
+    		outline: none;
+    		cursor: pointer;
+    		margin: 10px 272px;
+    	}
+
+    	.errorMsg{
+    		color: red;
+    		font-weight: 900;
+    		margin-left: 272px;
+    		margin-top: 10px;
+    		visibility: hidden;
+    		width: 500px;
+    		float: left;
+    	}
+
+    	/*底部样式*/
+    	.main-bottom{
+    		border-top: 1px solid #D5D5D5;
+    		text-align: center;
+    		font-size: 12px;
+    		color:#8D8D8D;
+    		font-family: "微软雅黑";
+    		height: 119px;
+    		position: relative;
+    	}
+
+    	.footInfo{
+    		width: 100%;
+    		float: left;
+    		text-align: center;
+    		line-height: 14px;
+    	}
+
+    	.footLogo{
+    		width: 100px;
+    		position: absolute;
+    		right: 20px;
+    		top: 20px;
+    	}
+
+        .compRangeTable{
+            height: auto;
+            margin-top: 0;
+            background: url(../images/1px.png) repeat-y;
+            border-bottom: 1px solid #96b6d1;
+            border-right: 1px solid #96b6d1;
+        }
+
+    	.compRange{
+    		width: 506px;
+    		padding:5px 0 5px 10px;
+    		height: auto;
+    		word-break: break-all;
+    	}
+
+    	.siteAddress{
+        	padding-top: 5px;
+		    padding-bottom: 5px;
+		    height: auto;
+		    width: 506px;
+		    word-break: break-all;
+        }
+
+        .main-lincenseTable{
+        	width: 643px;
+        }
+        
+        .regNoDiv{
+        	width: 500px;
+		    height: 30px;
+		    float: left;
+		    margin-top: 30px;
+		    padding-left: 182px;
+        }
+        
+        .marker_coder{
+            width: 500px;
+            height: 30px;
+            float: left;
+            padding-left: 273px;
+            line-height: 30px;
+        }
+
+        .holeLine{
+        	width: 500px;
+		    height: 30px;
+		    float: left;
+		    /*margin-top: 30px;*/
+		    padding-left: 170px;
+        }
+        
+        .reginput{
+        	width:270px;
+        }
+        
+        .regNoInput{
+        	height: 26px;
+		    width: 250px;
+		    margin-left: 5px;
+		    border: none;
+		    float: left;
+		    line-height: 26px;
+		    text-indent: 15px;
+		    outline: none;
+        }
+        
+        /*亮照代码区域*/
+        .main-codeBox{
+    		width:768px;
+    		height:550px;
+    		background: url(../images/table.png) no-repeat center center;
+    	}
+
+    	.main-codeBox-title{
+    		font-size: 13px;
+		    font-weight: 900;
+		    color: black;
+		    padding: 8px;
+		    text-indent: 10px;
+    	}
+    	
+    	.main-codeBox-left{
+    		float:left;
+    		width:452px;
+    		height: 526px;
+    		border-right: 1px solid #D5D5D5;
+    	}
+    	
+    	.main-codeBox-right{
+    		float:left;
+    		width:315px;
+    	}
+    	
+    	
+        .elecNo{
+        	height:30px;
+        	width:256px;
+        	letter-spacing: 5px;
+        }
+        
+        .mark{
+        	margin-right: 20px;
+        }
+        
+        .mark p{
+        	line-height:25px;
+        }
+        
+        .mark p:last-child{
+        	font-weight:900;
+        }
+        
+        .codeContent{
+        	width:300px;
+        }
+        
+        .codeBox-copyBtn{
+        	font-size:15px;
+        	margin: 50px 0 0 20px;
+        	line-height: 40px;
+        	font-weight:900;
+        	text-align: center;
+        	cursor: pointer;
+    		color: #000000;
+        	background: url(../images/applyBtn.png) no-repeat center center;
+        	*background:none;
+        	*border:1px solid #D5D5D5;
+        	width:120px;
+        	height:40px;
+        }
+        
+        .codeBox-msg{
+        	display:none;
+			color:red;
+			font-size:12px;
+			font-weight:900;
+			width:auto;
+			margin: 20px 0 0 20px;
+			height:40px;
+			line-height:40px;
+        }
+        
+        .codeBox-title{
+        	font-weight:900;
+        	font-size:13px;
+        	margin:20px 0 0 20px;
+        }
+        
+        .codeBox-des{
+        	margin:0 20px 0 20px;
+        	height: auto;
+    		word-break: break-all;
+    		font-size:12px;
+    		line-height:30px;
+        }
+    	

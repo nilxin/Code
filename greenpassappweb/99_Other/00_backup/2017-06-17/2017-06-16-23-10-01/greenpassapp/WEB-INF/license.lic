@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<License>
+    <BaseInformation>
+        <ProductName>Sefon LZFXFK Platform</ProductName>
+        <Version>V101R001C01</Version>
+        <LibVersion>v1.6</LibVersion>
+        <LicenseType>10</LicenseType>
+        <ExpiredDate>0000-00-00</ExpiredDate>
+        <MACList>
+            <MAC>AC:4E:91:44:64:E9</MAC>
+            <MAC>AC:4E:91:46:82:2A</MAC>
+            <MAC>AC:4E:91:46:81:BE</MAC>
+            <MAC>AC:4E:91:46:82:18</MAC>
+            <MAC>AC:4E:91:46:82:42</MAC>
+        </MACList>
+        <DEFVALUE>1</DEFVALUE> <!-- 若开关未配置，默认取这个值 -->
+    </BaseInformation>
+    <FunctionList>
+    	<!-- 使用属性value来表示是否启用，子系统中间定义的是菜单或功能开关,1表示启用，0表示不启用 -->
+		<System id="OA" remark="协同办公" code="OA0000" value="1" >
+			<!-- 廉政风险防控功能开关是一个开关，它在xml中定义为一个组 -->
+			<Group id="ProbityRiskPrevent" remark="廉政风险防控" value="1">
+				<Menu id="lzjg" remark="廉政监管" code="SP_" display="0" />
+				<Menu id="powerlist" remark="行政职权目录" code="OA_POWERS_"  display="0" />
+				<Menu id="postrisk" remark="岗位风险点" code="OA_POST_"  display="0" />
+				<Menu id="riskonoff" remark="风险点开关配置" code="OA_RISKCONFIG_" display="0" />
+				<Menu id="commonresource" remark="公共资源设置" code="OA0001005" display="0" />
+				<Feature id="process" remark="流程管理" code="OA0001006" display="0" />
+				<Feature id="task" remark="协同工作" code="OA0001007" display="0" />
+				<Feature id="outgoing" remark="发文管理" code="OA0001008" display="0" />
+				<Feature id="incoming" remark="收文管理" code="OA0001009" display="0" />
+			</Group>
+			<Menu id="ConferenceManagement" remark="会议管理" code="OA_CONFERENCE_" value="1" />
+			<Menu id="CalendarManagement" remark="日程计划" code="OA_PLAN_" value="0" />
+			<Feature id="ElecStamper" remark="电子印章" code="OA0004" value="0" />
+			<Menu id="DocumentDatum" remark="文档管理" code="OA_DOCUMENT_" value="0" />
+			<Menu id="AddressList" remark="通讯录管理" code="OA_MLIST_" value="0" />
+			<Menu id="VehicleManagement" remark="车辆管理" code="OA_CAR_" value="0"/>
+			<Menu id="EmailManagement" remark="邮件管理" code="OA_EMAIL_" value="0" />
+			<Menu id="Investigate" remark="调查与投票" code="OA_ONLINE_SURVEY_" value="0" />
+			<Menu id="PersonInfo" remark="人事档案" code="OA_PERSON_INFO_" value="0" />
+			<Menu id="ExtWorknote" remark="工作日志" code="OA_EXT_WORKNOTE_" value="0" />
+			<Feature id="PlusSign" remark="加签" code="OA0010" value="0" />
+			<Feature id="Countersign" remark="会签" code="OA0011" value="0" />
+		</System>
+        <System id="EDU" remark="廉政教育" code="EDU0000" value="1" />
+        <System id="DRM" remark="分析评估" code="DRM0000" value="1" />
+        <System id="PUB" remark="外部公示" code="PUB0000" value="1" />
+        <System id="ARC" remark="档案管理" code="ARC0000" value="1" />
+    </FunctionList>
+    <CheckCode>e2f65b10c47ccebdd1fd54c26468ea26</CheckCode>
+</License>

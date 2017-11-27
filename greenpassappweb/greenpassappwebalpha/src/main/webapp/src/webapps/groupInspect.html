@@ -1,0 +1,626 @@
+<div id="InspectionReview">
+	<style type="text/css">
+		.btn{width:50px;height:36px;line-height:17px;font-size:17px;}
+		.wrapper { 
+			display: grid; 
+			grid-template-columns: 600px 10px 600px 10px 600px 10px 600px; 
+			grid-template-rows: 400px 10px 400px 10px 400px 10px 400px 10px 400px;
+		} 
+		
+
+		.a { grid-area: 1 / 1 / 2 / 2; } 
+		.b { grid-area: 1 / 3 / 2 / 4; } 
+		.c { grid-area: 1 / 5 / 2 / 6; } 
+		.d { grid-area: 1 / 7 / 2 / 8; } 
+
+		.e { grid-area: 3 / 1 / 4 / 2; } 
+		.f { grid-area: 3 / 3 / 4 / 4; } 
+		.g { grid-area: 3 / 5 / 4 / 6; } 
+		.h { grid-area: 3 / 7 / 4 / 8; } 
+
+		.i { grid-area: 5 / 1 / 6 / 2; } 
+		.j { grid-area: 5 / 3 / 6 / 4; }
+		.k { grid-area: 5 / 5 / 6 / 6; }
+		.l { grid-area: 5 / 7 / 6 / 8; }
+
+		.m { grid-area: 7 / 1 / 8 / 2; }
+		.n { grid-area: 7 / 3 / 8 / 4; }
+		.o { grid-area: 7 / 5 / 8 / 6; }
+		.p { grid-area: 7 / 7 / 8 / 8; }
+
+		.q { grid-area: 9 / 1 / 10 / 2; }
+		.r { grid-area: 9 / 3 / 10 / 4; }
+		.s { grid-area: 9 / 5 / 10 / 6; }
+		.t { grid-area: 9 / 7 / 10 / 8; }
+		
+		.u { grid-area: 11 / 1 / 12 / 2; }
+		.v { grid-area: 11 / 3 / 12 / 4; }
+		.w { grid-area: 11 / 5 / 12 / 6; }
+		.x { grid-area: 11 / 7 / 12 / 8; }
+
+	</style>
+
+	<h3>集团稽查</h3>
+	<div class="subScroll" style="width: 100%;height: 100%;">
+		<div class="wrapper sub_container"> 
+			<div class="box a" id="greensitelist">A</div>
+			<div class="box b" id="greensiteblacklist">B</div>
+			<div class="box c">
+				<select name="选择月份"> 
+					<option value="0">1月</option> 
+					<option value="1">2月</option>
+					<option value="3">3月</option> 
+					<option value="4">4月</option>
+					<option value="5">5月</option> 
+					<option value="6">6月</option> 
+					<option value="7">7月</option> 
+					<option value="8">8月</option>
+					<option value="9">9月</option>
+					<option value="10">10月</option>
+					<option value="11">11月</option>
+					<option value="12">12月</option>
+				</select>
+				<input name="月份查询" class="btn" type="button" value="查询"/> 
+			</div>
+			<div class="box d"></div>
+			<div class="box e" id="greenchecklist">C</div>
+			<div class="box f" id="greenblackmoney">D</div> 
+			<div class="box g">
+			</div>
+			<div class="box h"></div>
+			<div class="box i" id="greencard">E</div> 
+			<div class="box j" id="greenblackcause">F</div> 
+			<div class="box k"></div>
+			<div class="box l"></div>
+			<div class="box m" id="gereenTonnage"></div> 
+			<div class="box n" id="greenblack2Tonnage"></div> 
+		</div>
+	</div>
+</div>
+<script rel="script">
+	define(function(require){
+		require("driverEvaluate/js/echarts.min.js");
+		require("driverEvaluate/js/china.js");
+		var base=require("Base");
+
+		return base.extend({
+			onInit: function(){
+				this.buildCharts();
+				$(".subScroll").loadScroll();
+
+			},
+			buildCharts: function(){
+				var greensitelist = echarts.init(document.getElementById('greensitelist'));//绿通车通行
+				var greensiteblacklist = echarts.init(document.getElementById('greensiteblacklist'));//绿通车黑名单
+				var greenchecklist = echarts.init(document.getElementById('greenchecklist'));//稽查次数、稽查车辆
+				var greenblackmoney = echarts.init(document.getElementById('greenblackmoney'));//黑名单追缴金额、创收金额
+				var greencard = echarts.init(document.getElementById('greencard'));//授权卡使用
+				var greenblackcause = echarts.init(document.getElementById('greenblackcause'));//黑名单违规原因分析
+				var gereenTonnage = echarts.init(document.getElementById('gereenTonnage'));//路公司绿通车通行吨位分析
+				var greenblack2Tonnage = echarts.init(document.getElementById('greenblack2Tonnage'));//绿通车黑名单车辆吨位数分析2级品类前五
+
+				//成雅分公司各站点绿通车绿通情况
+				var option1 = {
+					title: {
+						text: '成雅分公司各站点绿通车绿通情况',
+						x:'center',
+					},
+					tooltip: {
+						trigger: 'axis',
+						axisPointer: {
+							type: 'shadow'
+						}
+					},
+					legend: {
+						y:'bottom',
+						data: ['2016年', '2017年']
+					},
+					grid: {
+						left: '3%',
+						right: '4%',
+						bottom: '7%',
+						containLabel: true
+					},
+					xAxis: {
+						type: 'value',
+						boundaryGap: [0, 0.01]
+					},
+					yAxis: {
+						type: 'category',
+						data: ['成都站','双流站','普兴站','新津站','青龙站','回龙站','寿安站','浦江站','石象湖','成佳站','太平站','名山站','雅安东站','雅安北站','西康大桥站','雅安南站']
+					},
+					series: [
+						{
+							name: '2016年',
+							type: 'bar',
+							data: [10, 5, 5, 5, 5, 5,10, 5, 5, 5, 5, 5,10, 5, 5, 5]
+						},
+						{
+							name: '2017年',
+							type: 'bar',
+							data: [10, 5, 5, 5, 5, 5,10, 5, 5, 5, 5, 5,10, 5, 5, 5]
+						}
+					]
+				}
+
+				//成雅分公司各站点黑名单车辆情况
+				var option2 = {
+					title: {
+						text: '成雅分公司各站点黑名单车辆情况',
+						x:'center',
+					},
+					tooltip: {
+						trigger: 'axis',
+						axisPointer: {
+							type: 'shadow'
+						}
+					},
+					legend: {
+						y:'bottom',
+						data: ['2016年', '2017年']
+					},
+					grid: {
+						left: '3%',
+						right: '4%',
+						bottom: '7%',
+						containLabel: true
+					},
+					xAxis: {
+						type: 'value',
+						boundaryGap: [0, 0.01]
+					},
+					yAxis: {
+						type: 'category',
+
+						data: ['成都站','双流站','普兴站','新津站','青龙站','回龙站','寿安站','浦江站','石象湖','成佳站','太平站','名山站','雅安东站','雅安北站','西康大桥站','雅安南站']
+					},
+					series: [
+						{
+							name: '2016年',
+							type: 'bar',
+							data: [10, 5, 5, 5, 5, 5,10, 5, 5, 5, 5, 5,10, 5, 5, 5]
+						},
+						{
+							name: '2017年',
+							type: 'bar',
+							data: [10, 5, 5, 5, 5, 5,10, 5, 5, 5, 5, 5,10, 5, 5, 5]
+						}
+					]
+				}
+
+				//成雅分公司各站点稽查开展情况（稽查次数、稽查车辆数）
+				var option3 = {
+					title: {
+						text: '成雅分公司各站点稽查开展情况',
+						x:'center',
+					},
+					tooltip: {
+						trigger: 'axis'
+					},
+					legend: {
+						y:'bottom',
+						data:['稽查行动次数','稽查车辆']
+					},
+					grid: {
+						top: '20%',
+						containLabel: true
+					},
+					xAxis:  {
+						type: 'category',
+						boundaryGap: false,
+						data: ['成都站','双流站','普兴站','新津站','青龙站','回龙站']
+					},
+					yAxis: {
+						type: 'value',
+						axisLabel: {
+							formatter: '{value}'
+						}
+					},
+					series: [
+						{
+							name:'稽查行动次数',
+							type:'line',
+							data: [6, 5, 5, 5, 5,4],
+							markPoint: {
+								data: [
+									{type: 'max', name: '最大值'},
+									{type: 'min', name: '最小值'}
+								]
+							},
+							markLine: {
+								data: [
+									{type: 'average', name: '平均值'}
+								]
+							}
+						},
+						{
+							name:'稽查车辆',
+							type:'line',
+							data: [2, 1, 1, 2, 0, 1],
+							markLine: {
+								data: [
+									{type: 'average', name: '平均值'},
+									[{
+										symbol: 'none',
+										x: '90%',
+										yAxis: 'max'
+									}, {
+										symbol: 'circle',
+										label: {
+											normal: {
+												position: 'start',
+												formatter: '最大值'
+											}
+										},
+										type: 'max',
+										name: '最高点'
+									}]
+								]
+							}
+						}
+					]
+				}
+
+				//成雅分公司黑名单车辆(追缴金额、创收金额)
+				var option4 = {
+					title: {
+						text: '成雅分公司黑名单车辆(追缴金额、创收金额)',
+						x:'center',
+					},
+					tooltip: {
+						trigger: 'axis'
+					},
+					legend: {
+						y:'bottom',
+						data:['追缴金额','创收金额']
+					},
+					grid: {
+						top: '20%',
+						containLabel: true
+					},
+					xAxis:  {
+						type: 'category',
+						boundaryGap: false,
+						data: ['成都站','双流站','普兴站','新津站','青龙站','回龙站']
+					},
+					yAxis: {
+						type: 'value',
+						axisLabel: {
+							formatter: '{value}'
+						}
+					},
+					series: [
+						{
+							name:'追缴金额',
+							type:'line',
+							data: [3132, 20002, 4566, 45321, 3455,4908],
+							markPoint: {
+								data: [
+									{type: 'max', name: '最大值'},
+									{type: 'min', name: '最小值'}
+								]
+							},
+							markLine: {
+								data: [
+									{type: 'average', name: '平均值'}
+								]
+							}
+						},
+						{
+							name:'创收金额',
+							type:'line',
+							data: [4567, 3131, 2562, 1567, 1256, 7532],
+							markLine: {
+								data: [
+									{type: 'average', name: '平均值'},
+									[{
+										symbol: 'none',
+										x: '90%',
+										yAxis: 'max'
+									}, {
+										symbol: 'circle',
+										label: {
+											normal: {
+												position: 'start',
+												formatter: '最大值'
+											}
+										},
+										type: 'max',
+										name: '最高点'
+									}]
+								]
+							}
+						}
+					]
+				}
+
+				//成雅分公司授权卡使用情况
+				var option5 = {
+					title : {
+						text: '成雅分公司授权卡使用情况',
+						x:'center'
+					},
+					tooltip : {
+						trigger: 'item',
+						formatter: "{a} <br/>{b} : {c} ({d}%)"
+					},
+					legend: {
+						orient: 'vertical',
+						left: 'right',
+						data: ['车情不符','车型不符','客货不符','计重异常','坏卡']
+					},
+					series : [
+						{
+							type: 'pie',
+							radius : '50%',
+							center: ['50%', '60%'],
+							data:[
+								{value:30, name:'车情不符'},
+								{value:10, name:'车型不符'},
+								{value:10, name:'客货不符'},
+								{value:5, name:'计重异常'},
+								{value:35, name:'坏卡'},
+							],
+							itemStyle: {
+								emphasis: {
+									shadowBlur: 10,
+									shadowOffsetX: 0,
+									shadowColor: 'rgba(0, 0, 0, 0.5)'
+								}
+							}
+						}
+					]
+				}
+
+				//成雅分公司各站点黑名单车辆稽查原因分析
+				var option6 = {
+					title : {
+						text: '成雅分公司各站点黑名单车辆稽查原因分析',
+						x:'center'
+					},
+					tooltip : {
+						trigger: 'item',
+						formatter: "{a} <br/>{b} : {c} ({d}%)"
+					},
+					legend: {
+						orient: 'vertical',
+						left: 'right',
+						data: ['伪装','混装','车型不符','临界车','小改大','免改正','集装厢改正常货车','大改小','正改免','正常货车改集装箱']
+					},
+					series : [
+						{
+							type: 'pie',
+							radius : '50%',
+							center: ['50%', '60%'],
+							data:[
+								{value:1, name:'伪装'},
+								{value:2, name:'混装'},
+								{value:5, name:'车型不符'},
+								{value:6, name:'临界车'},
+								{value:9, name:'小改大'},
+								{value:3, name:'免改正'},
+								{value:10, name:'集装厢改正常货车'},
+								{value:6, name:'大改小'},
+								{value:3, name:'正改免'},
+								{value:1, name:'正常货车改集装箱'},
+							],
+							itemStyle: {
+								emphasis: {
+									shadowBlur: 10,
+									shadowOffsetX: 0,
+									shadowColor: 'rgba(0, 0, 0, 0.5)'
+								}
+							}
+						}
+					]
+				}
+
+				//成雅分公司绿通车1级品类吨位分析
+				var option7 = {
+					title: {
+						text: '成雅分公司绿通车吨位分析-1级分类',
+						x:'center',
+					},
+					tooltip : {
+						trigger: 'axis',
+						axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+							type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+						}
+					},
+					legend: {
+						orient: 'horizontal',    
+						y:'bottom',
+						data: ['鲜活蔬菜', '鲜活水果','鲜活水产','鲜活禽畜','鲜活蛋奶'],
+					},
+					grid: {
+						left: '7%',
+						right: '4%',
+						bottom: '10%',
+						containLabel: true
+					},
+					xAxis:  {
+						type: 'value'
+					},
+					yAxis: {
+						type: 'category',
+						data: ['微型卡车(0~1.8吨)','轻型卡车（1.8吨~6.0)吨 ','中型卡车(6.0~14.0)吨','重型卡车(14.0~100吨)',' 超重型卡车(100吨以上)']
+					},
+					series: [
+						{
+							name: '鲜活蔬菜',
+							type: 'bar',
+							stack: '总量',
+							label: {
+								normal: {
+									show: true,
+									position: 'insideRight'
+								}
+							},
+							data: [200, 302, 301, 334, 390]
+						},
+						{
+							name: '鲜活水果',
+							type: 'bar',
+							stack: '总量',
+							label: {
+								normal: {
+									show: true,
+									position: 'insideRight'
+								}
+							},
+							data: [100, 302, 301, 334, 390]
+						},
+						{
+							name: '鲜活水产',
+							type: 'bar',
+							stack: '总量',
+							label: {
+								normal: {
+									show: true,
+									position: 'insideRight'
+								}
+							},
+							data: [203, 302, 301, 334, 390]
+						},
+						{
+							name: '鲜活禽畜',
+							type: 'bar',
+							stack: '总量',
+							label: {
+								normal: {
+									show: true,
+									position: 'insideRight'
+								}
+							},
+							data: [111, 302, 301, 334, 390]
+						},
+						{
+							name: '鲜活蛋奶',
+							type: 'bar',
+							stack: '总量',
+							label: {
+								normal: {
+									show: true,
+									position: 'insideRight'
+								}
+							},
+							data: [34, 302, 301, 334, 390]
+						}
+					]
+				}
+
+				//成雅黑名单吨位分析
+				var option8 = {
+					title: {
+						text: '双流南绿通车黑名单车辆吨位分析-2级分类排名前五',
+						x:'center',
+
+					},
+					tooltip : {
+						trigger: 'axis',
+						axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+							type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+						}
+					},
+					legend: {
+						orient: 'horizontal',    
+						y:'bottom',
+						data: ['玉米类', '仁果类','瓜果类','鱼类','家禽'],
+					},
+					grid: {
+						left: '7%',
+						right: '4%',
+						bottom: '10%',
+						containLabel: true
+					},
+					xAxis:  {
+						type: 'value'
+					},
+					yAxis: {
+						type: 'category',
+						data: ['微型卡车(0~1.8吨)','轻型卡车（1.8吨~6.0)吨 ','中型卡车(6.0~14.0)吨','重型卡车(14.0~100吨)',' 超重型卡车(100吨以上)']
+					},
+					series: [
+						{
+							name: '玉米类',
+							type: 'bar',
+							stack: '总量',
+							label: {
+								normal: {
+									show: true,
+									position: 'insideRight'
+								}
+							},
+							data: [200, 302, 301, 334, 390]
+						},
+						{
+							name: '仁果类',
+							type: 'bar',
+							stack: '总量',
+							label: {
+								normal: {
+									show: true,
+									position: 'insideRight'
+								}
+							},
+							data: [100, 302, 301, 334, 390]
+						},
+						{
+							name: '瓜果类',
+							type: 'bar',
+							stack: '总量',
+							label: {
+								normal: {
+									show: true,
+									position: 'insideRight'
+								}
+							},
+							data: [203, 302, 301, 334, 390]
+						},
+						{
+							name: '鱼类',
+							type: 'bar',
+							stack: '总量',
+							label: {
+								normal: {
+									show: true,
+									position: 'insideRight'
+								}
+							},
+							data: [111, 302, 301, 334, 390]
+						},
+						{
+							name: '家禽',
+							type: 'bar',
+							stack: '总量',
+							label: {
+								normal: {
+									show: true,
+									position: 'insideRight'
+								}
+							},
+							data: [34, 302, 301, 334, 390]
+						}
+					]
+				}
+
+
+		        // 使用刚指定的配置项和数据显示图表。
+		        greensitelist.setOption(option1);
+				greensiteblacklist.setOption(option2);
+				greenchecklist.setOption(option3);
+				greenblackmoney.setOption(option4);
+				greencard.setOption(option5);
+				greenblackcause.setOption(option6);
+				gereenTonnage.setOption(option7);
+				greenblack2Tonnage.setOption(option8);				
+			}
+		})
+
+
+
+	})
+
+
+
+</script>

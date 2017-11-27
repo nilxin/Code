@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="worker.AuditPictureMapper">
+	<!-- 根据当前时间查询最大编号 -->
+	<select id="queryMaxNum" resultType="com.cdsf.greenpassdriver.domain.AuditPicture">
+		SELECT 
+			MAX(num) 
+		FROM 
+			t_audit_picture 
+		WHERE 
+			create_time=#{_parameter} 
+	</select>
+	<!--新增文件数据-->
+	<insert id="addFile">
+		INSERT INTO t_audit_picture(
+			flow_id,
+			main_id,
+			num,
+			picture_name,
+			suffix_name,
+			file_dir_path,
+			file_pic_size,
+			belong_type,
+			create_time
+		)
+		VALUES(
+		#{auditPictureId},
+		#{mainId},
+		#{num},
+		#{pictureName},
+		#{suffixName},
+		#{fileDirPath},
+		#{filePicSize},
+		#{belongType},
+		#{createTime}
+		)
+	</insert>
+	<!-- 根据主键查询 -->
+	<select id="findById" resultType="com.cdsf.greenpassdriver.domain.AuditPicture">
+		SELECT 
+			* 
+		FROM 
+			t_audit_picture 
+		WHERE 
+			flow_id=#{_parameter} 
+	</select>
+	<!--根据主表的主键集合查询 -->
+	<select id="byMainIdList" resultType="com.cdsf.greenpassdriver.domain.AuditPicture">
+		SELECT 
+			* 
+		FROM 
+			t_audit_picture 
+		WHERE 
+			main_id IN 
+			<foreach collection="list" item="mainId" open="(" close=")" separator=",">
+				#{mainId}
+			</foreach>
+	</select>
+	<!-- 根据主键删除数据 -->
+	<delete id="delById" >
+		DELETE FROM t_audit_picture WHERE flow_id=#{_parameter}
+	</delete>
+	<!--根据运单id,查询现场处理图片 -->
+	<select id="byWaybillIdList" resultType="com.cdsf.greenpassdriver.domain.AuditPicture">
+		SELECT
+			w.id AS mainId,ap.flow_id,ap.belong_type,ap.file_dir_path,ap.file_pic_size
+		FROM
+			t_audit_picture ap
+		LEFT JOIN t_waybill w ON w.audit_conclusion_flowId=ap.main_id
+		WHERE
+		w.id IN
+			<foreach collection="list" item="mainId" open="(" close=")" separator=",">
+				#{mainId}
+			</foreach>
+			
+	</select>
+
+</mapper>

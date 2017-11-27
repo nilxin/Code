@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="login.AppLoginMapper">
+	<select id="queryUser" resultType="user.User">
+		SELECT 		
+			GROUP_CONCAT(ur.role_id) roles,
+			u. ID ID,
+			u. ID flowId,
+			u.ID AS userId,
+			u.user_name userName,
+			u.user_name AS NAME,
+			u.login_name,
+			u.area_id,
+			u.area_code,
+			u.status,
+			u.phone_num,
+			u.id_card,
+			u.area_code,
+			u.user_desc,
+			u.user_type,
+			u.sex,
+			u.audit_picture_id
+		FROM t_user u
+		LEFT JOIN t_user_role ur ON ur.user_id=u.id
+		WHERE 
+			u.status=1<!-- 1启用 -->
+			AND u.id=#{userId} 
+	</select>
+	<select id="findByPhone" resultType="user.User">
+		SELECT 		
+			GROUP_CONCAT(ur.role_id) roles,
+			u. ID ID,
+			u. ID flowId,
+			u.ID AS userId,
+			u.user_name userName,
+			u.user_name AS NAME,
+			u.login_name,
+			u.area_id,
+			u.area_code,
+			u.status,
+			u.phone_num,
+			u.id_card,
+			u.area_code,
+			u.user_desc,
+			u.user_type,
+			u.sex,
+			u.audit_picture_id
+		FROM t_user u
+		LEFT JOIN t_user_role ur ON ur.user_id=u.id
+		WHERE 
+			u.status=1<!-- 1启用 -->
+			AND u.phone_num=#{phoneNum} 
+	</select>
+	<select id="find" resultType="user.User">
+		SELECT 		
+			GROUP_CONCAT(ur.role_id) roles,
+			u. ID ID,
+			u. ID flowId,
+			u.ID AS userId,
+			u.user_name userName,
+			u.user_name AS NAME,
+			u.login_name,
+			u.area_id,
+			u.area_code,
+			u.status,
+			u.phone_num,
+			u.id_card,
+			u.area_code,
+			u.user_desc,
+			u.user_type,
+			u.sex,
+			u.audit_picture_id
+		FROM t_user u
+		LEFT JOIN t_user_role ur ON ur.user_id=u.id
+		WHERE 
+			u.status=1<!-- 1启用 -->
+			AND u.login_name=#{loginName} 
+	</select>
+	<select id="checkLogin" resultType="user.User">
+		SELECT 
+			*
+		FROM t_user u
+		WHERE 
+			u.status=1<!-- 1启用 -->
+			AND u.login_name=#{loginName} 
+	</select>
+</mapper>

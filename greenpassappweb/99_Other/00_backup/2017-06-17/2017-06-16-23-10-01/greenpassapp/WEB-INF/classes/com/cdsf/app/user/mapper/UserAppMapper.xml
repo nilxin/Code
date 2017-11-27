@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="user.UserAppMapper">
+	<select id="verifyUser" resultType="user.User">
+		SELECT * FROM t_user 
+		WHERE del_flag = 0 
+		AND status=1
+		AND login_name = #{loginName} 
+		AND login_pwd = #{loginPwd} 
+	</select>
+	<!-- 查询userId对应的地区编码 -->
+	<select id="queryAreaCode" resultType="String" parameterType="String">
+		SELECT area_code FROM t_user WHERE id=#{userId}
+	</select>
+	<!-- 用户列表 -->
+	<select id="list" resultType="user.User">
+		SELECT
+			u. ID ID,
+			u. ID flowId,
+			u.user_name userName,
+			u.user_name AS NAME,
+			u.login_name,
+			u.area_id,
+			u.area_code,
+			ta.area_name,
+			ur.role_name,
+			ur.roles,
+			u.status,
+			u.phone_num,
+			u.id_card,
+			u.area_code,
+			u.user_desc,
+			u.user_type
+		FROM
+			T_USER u
+		LEFT JOIN t_area ta ON ta.area_code = u.area_code
+		LEFT JOIN (
+			SELECT
+				ur.user_id,
+				array_to_string(ARRAY_AGG(ur.role_id), ',') roles,
+				array_to_string(ARRAY_AGG(r.role_name), ',') role_name
+			FROM
+				t_user_role ur
+			LEFT JOIN t_role r ON ur.role_id = r.flow_id
+			GROUP BY
+				ur.user_id
+		) ur ON ur.user_id = u. ID
+		WHERE u.del_flag = 0
+		AND u.area_code LIKE {currentUserAreaCode}%
+		<if test="@T@hasText(userName)">
+			AND u.user_name LIKE %{userName}% </if>
+		<if test="@T@hasText(loginName)">
+			AND u.login_name LIKE %{loginName}% </if>
+		<if test="@T@hasText(areaCode)">
+			AND u.area_code IN (SELECT area_code FROM t_area WHERE area_code LIKE {areaCode}%)
+		</if>
+		ORDER BY u.modify_time DESC
+	</select>
+	<!-- 验证登录名是否重复 -->
+	<select id="checkLoginNameExists" resultType="int"
+		parameterType="user.User">
+		SELECT COUNT(1) FROM t_user u WHERE 1=1 AND u.DEL_FLAG = 0
+		AND u.login_name = #{loginName}
+		<if test="@T@notNull(flowId)">
+			AND u.id &lt;&gt; #{flowId}
+		</if>
+	</select>
+	<!-- 获取默认密码 -->
+	<select id="getDefaultPwd" resultType="String" >
+		select t.pwd from t_default_pwd t where t.id ='1'
+	</select>
+	<!-- 修改默认密码 -->
+	<update id="modDefaultPwd">
+		UPDATE t_default_pwd
+		SET
+		pwd = #{_parameter,jdbcType=VARCHAR}
+		WHERE id ='1'
+	</update>
+	<!-- 新增用户 -->
+	<insert id="add" parameterType="user.User">
+		INSERT INTO T_USER(
+		id,user_name,login_name,login_pwd,user_type,
+		phone_num,id_card,create_user_id,create_time,
+		modify_user_id,modify_time,del_flag,status,area_id,area_code,user_desc
+		)
+		VALUES(
+		#{flowId,jdbcType=VARCHAR},
+		#{userName,jdbcType=VARCHAR},
+		#{loginName,jdbcType=VARCHAR},
+		#{loginPwd,jdbcType=VARCHAR},
+		#{userType,jdbcType=INTEGER},
+		#{phoneNum,jdbcType=VARCHAR},
+		#{idCard,jdbcType=VARCHAR},
+		#{createUserId,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{modifyUserId,jdbcType=VARCHAR},
+		#{modifyTime,jdbcType=TIMESTAMP},
+		#{delFlag,jdbcType=INTEGER},
+		#{status,jdbcType=INTEGER},
+		#{areaId,jdbcType=VARCHAR},
+		#{areaCode,jdbcType=VARCHAR},
+		#{userDesc,jdbcType=VARCHAR}
+		)
+	</insert>
+	<!-- 修改 -->
+	<update id="mod" parameterType="user.User">
+		UPDATE T_USER
+		SET
+		login_name = #{loginName,jdbcType=VARCHAR},
+		user_name = #{userName,jdbcType=VARCHAR},
+		phone_num= #{phoneNum,jdbcType=VARCHAR},
+		id_card = #{idCard,jdbcType=VARCHAR},
+		status = #{status,jdbcType=INTEGER},
+		area_id = #{areaId,jdbcType=VARCHAR},
+		area_code = #{areaCode,jdbcType=VARCHAR},
+		user_desc = #{userDesc,jdbcType=VARCHAR},
+		modify_user_id=#{modifyUserId,jdbcType=VARCHAR},
+		modify_time=#{modifyTime,jdbcType=TIMESTAMP}
+		WHERE id = #{flowId}
+	</update>
+	<!--根据干部信息修改用户信息 -->
+	<update id="modByGbInfo" parameterType="user.User">
+		UPDATE T_USER
+		SET
+		login_name = #{loginName,jdbcType=VARCHAR},
+		user_name = #{userName,jdbcType=VARCHAR},
+		phone_num= #{phoneNum,jdbcType=VARCHAR},
+		id_card = #{idCard,jdbcType=VARCHAR},
+		modify_user_id=#{modifyUserId,jdbcType=VARCHAR},
+		modify_time=current_timestamp
+		WHERE id = #{flowId}
+	</update>
+	<!-- 启用禁用 -->
+	<update id="changeStatus">
+		UPDATE T_USER
+		SET
+		status = cast(#{status} as INTEGER),
+		modify_user_id=#{modifyUserId,jdbcType=VARCHAR},
+		modify_time=#{modifyTime,jdbcType=TIMESTAMP}
+		WHERE id = #{flowId}
+	</update>
+	<!-- 逻辑删除 -->
+	<update id="del">
+		UPDATE t_user SET 
+		del_flag =cast(#{delFlag} as DECIMAL),
+		modify_user_id=#{modifyUserId,jdbcType=VARCHAR},
+		modify_time=#{modifyTime,jdbcType=TIMESTAMP}
+		WHERE id IN
+		<foreach collection="ids" open="(" separator="," close=")"
+			item="id">
+			#{id}
+		</foreach>
+	</update>
+	<!-- 添加用户和角色关系 -->
+	<insert id="addUserRole" parameterType="user.UserRole">
+		INSERT INTO
+		T_USER_ROLE
+		(ID,USER_ID,ROLE_ID)
+		VALUES
+		(#{id,jdbcType=VARCHAR},
+		#{userId,jdbcType=VARCHAR},
+		#{roleId,jdbcType=VARCHAR}
+		)
+	</insert>
+	<!-- 删除用户和角色关系 -->
+	<delete id="delectUserRole">
+		DELETE FROM T_USER_ROLE WHERE USER_ID = #{_parameter}
+	</delete>
+	<!-- 查询角色列表 -->
+	<select id="listRole" resultType="Map">
+		SELECT 
+			T.flow_id AS id,
+			T.ROLE_NAME AS name 
+		FROM t_role T 
+		WHERE T.flow_id !='-1'
+		ORDER BY modify_time DESC
+	</select>
+	<!-- 重置密码 -->
+	<update id="resetPwd" parameterType="list">
+		<foreach collection="list" item="user">
+			UPDATE t_user SET 
+				login_pwd =#{user.loginPwd},
+				modify_user_id=#{user.modifyUserId,jdbcType=VARCHAR},
+				modify_time=#{user.modifyTime,jdbcType=TIMESTAMP} 
+			WHERE id =#{user.flowId};
+		</foreach>
+	</update>
+	<!--  通过当前用户id查询出用户的密码 -->
+	<select id="queryPwd" parameterType="String" resultType="user.User">
+		SELECT
+			login_pwd,
+			login_name 
+		FROM t_user t WHERE
+		t.id=#{_parameter}
+	</select>
+	<!--修改密码（用户修改自己的密码） -->
+	<update id="updatePwd" parameterType="user.User">
+		UPDATE t_user SET
+		login_pwd=#{loginPwd} WHERE id=#{id}
+	</update>
+	<!--个人信息设置（用户修改自己的信息） -->
+	<update id="modUserInfo" parameterType="user.User">
+		UPDATE T_USER
+		SET
+		user_name = #{userName,jdbcType=VARCHAR},
+		phone_num= #{phoneNum,jdbcType=VARCHAR},
+		modify_user_id=#{modifyUserId,jdbcType=VARCHAR},
+		modify_time=#{modifyTime,jdbcType=TIMESTAMP}
+		WHERE id = #{flowId}
+	</update>
+	<!-- 通过电话号码查询user主键 -->
+	<select id="getIdByPhoneNum" resultType="String">
+		SELECT id FROM t_user WHERE login_name=#{_parameter} AND del_flag=0
+	</select>
+	<!--app接口：1 用户登录校验：根据loginName和loginPwd查询主键-->
+	<select id="queryUserId" resultType="String">
+		SELECT
+			u. ID
+		FROM
+			t_user u,
+			t_user_role ur,
+			t_role r,
+			t_area area,
+			t_role_privilege rp,
+			t_privilege P
+		WHERE
+			u.status = #{status}
+		AND u.del_flag = #{delFlag}
+		AND u.login_name =#{loginName}
+		AND u.login_pwd =#{loginPwd}
+		AND ur.user_id = u.ID
+		AND r.flow_id = ur.role_id
+		AND r.status = #{status}
+		AND area.area_code = u.area_code
+		AND area.del_flag = #{delFlag}
+		AND area.status = #{status}
+		AND rp.role_id = r.flow_id
+		AND rp.privilege_id = #{privilegeId}
+		AND P .flow_id = rp.privilege_id
+		AND P .status = #{status}
+	</select>
+	<!--app接口：5 根据用户id返回用户基本信息 -->
+	<select id="userDetail" resultType="user.User">
+		SELECT
+			tu.user_name,
+			pu. position,
+			tu.phone_num
+		FROM
+			t_user tu,
+			ph_user_info pu
+		WHERE
+			tu. ID = #{userId}
+		AND pu.t_user_id = tu.ID
+	</select>
+	<!--个人信息设置（APP端修改） -->
+	<update id="appModInfo" >
+		UPDATE T_USER
+		SET
+		<if test="@T@hasText(userName)">
+		user_name = #{userName},
+		</if>
+		<if test="@T@notNull(sex)">
+			sex=#{sex},
+		</if>
+		modify_user_id=#{userId,jdbcType=VARCHAR},
+		modify_time=#{modifyTime,jdbcType=TIMESTAMP}
+		WHERE id = #{userId}
+	</update>
+	<!--保存用户头像图片路径（APP端修改） -->
+	<update id="saveUserImg" >
+		UPDATE T_USER
+		SET
+		audit_picture_id=#{auditPictureId},
+		modify_user_id=#{userId,jdbcType=VARCHAR},
+		modify_time=#{modifyTime,jdbcType=TIMESTAMP}
+		WHERE id = #{mainId}
+	</update>
+	<!-- 检查电话或账号是否存在 -->
+	<select id="checkExistsRegister" resultType="int"
+		parameterType="user.User">
+		SELECT 
+			COUNT(1) 
+		FROM t_user u 
+		WHERE u.DEL_FLAG = 0
+		AND (u.login_name = #{phoneNum} OR u.phone_num=#{phoneNum})
+	</select>
+	<!-- 注册用户 -->
+	<insert id="appRegister" parameterType="user.User">
+		INSERT INTO T_USER(
+		id,user_name,login_name,login_pwd,user_type,
+		phone_num,id_card,create_user_id,create_time,
+		modify_user_id,modify_time,del_flag,status,area_id,area_code,user_desc
+		)
+		VALUES(
+		#{flowId,jdbcType=VARCHAR},
+		#{phoneNum,jdbcType=VARCHAR},
+		#{phoneNum,jdbcType=VARCHAR},
+		#{loginPwd,jdbcType=VARCHAR},
+		#{userType,jdbcType=INTEGER},
+		#{phoneNum,jdbcType=VARCHAR},
+		#{idCard,jdbcType=VARCHAR},
+		#{createUserId,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{modifyUserId,jdbcType=VARCHAR},
+		#{modifyTime,jdbcType=TIMESTAMP},
+		#{delFlag,jdbcType=INTEGER},
+		#{status,jdbcType=INTEGER},
+		#{areaId,jdbcType=VARCHAR},
+		#{areaCode,jdbcType=VARCHAR},
+		#{userDesc,jdbcType=VARCHAR}
+		)
+	</insert>
+	<!--app端修改密码 -->
+	<update id="appModPwd" >
+		UPDATE T_USER
+		SET
+		login_pwd=#{loginPwd},
+		modify_time=current_timestamp
+		WHERE u.login_name = #{phoneNum} OR u.phone_num=#{phoneNum}
+	</update>
+	<!--根据主键查询 -->
+	<select id="findById" resultType="user.User">
+		SELECT 
+			* 
+		FROM t_user u 
+		WHERE u.id=#{_parameter}
+	</select>
+	<!-- 修改电话、login_name -->
+	<update id="appModPhoned" parameterType="user.User">
+		UPDATE T_USER
+		SET
+		<if test="@T@hasText(loginName)">
+			login_name=#{loginName},
+		</if>
+		phone_num=#{phoneNum},
+		modify_user_id=#{userId},
+		modify_time=current_timestamp
+		WHERE id=#{userId}
+	</update>
+	<!--根据主键查询 -->
+	<select id="findByPhone" resultType="user.User">
+		SELECT 
+			* 
+		FROM t_user u 
+		WHERE 
+			u.login_name=#{_parameter} 
+		OR  u.phone_num=#{_parameter}
+	</select>
+	
+	
+	<!-- 根据useid找到角色id -->
+	<select id="getRoleIdByUserId" resultType="java.lang.String">
+		SELECT 
+		   role_id
+		FROM t_user_role ur  left join t_user u ON  ur.user_id = u.id
+		WHERE 
+			u.id=#{userId} 
+	</select>
+</mapper>

@@ -1,0 +1,181 @@
+<div id="echartsBox">
+	<h3>绿通车统计</h3>
+	<div class="echartsBox clearfix">
+		<div class="echartsBox_left fl">
+			<div class="echartsBox_echarts" id="category"></div>
+		</div>
+		<div class="echartsBox_right fl">
+			<div class="echartsBox_echarts" id="siteStatis"></div>
+		</div>
+	</div>
+</div>
+<script rel="script">
+    define(function(require){
+        var base = require("Base"),
+        	_self; 
+        return base.extend({
+			onInit : function(options){
+				_self = this;
+				_self.getCategory();
+				_self.getsiteStatis();
+			},
+			//品种统计图表
+			getCategory : function(){
+				var myBarChart = echarts.init(document.getElementById('category'));
+				option = {
+				    title : {
+				        text: '鲜活品类统计',
+				        x:'center'
+				    },
+				    tooltip : {
+				        trigger: 'item',
+				        formatter: "{a} <br/>{b} : {c} ({d}%)"
+				    },
+				    legend: {
+				        orient: 'vertical',
+				        left: 'left',
+				        data: ['新鲜蔬菜','新鲜水果','鲜活水产','鲜活畜禽','鲜蛋肉奶']
+				    },
+				    series : [
+				        {
+				            name: '访问来源',
+				            type: 'pie',
+				            radius : '55%',
+				            center: ['50%', '60%'],
+				            data:[
+				                {value:335, name:'新鲜蔬菜'},
+				                {value:310, name:'新鲜水果'},
+				                {value:234, name:'鲜活水产'},
+				                {value:135, name:'鲜活畜禽'},
+				                {value:1548, name:'鲜蛋肉奶'}
+				            ],
+				            itemStyle: {
+				                emphasis: {
+				                    shadowBlur: 10,
+				                    shadowOffsetX: 0,
+				                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+				                }
+				            }
+				        }
+				    ]
+				};
+				myBarChart.setOption(option,true);
+			},
+			//站点统计图表
+			getsiteStatis : function(){
+				var myBarChart = echarts.init(document.getElementById('siteStatis'));
+				var dataAxis = ['成都站','雅安站','新津站','绵阳站','南充站'];
+				var data = [
+								{value:220,name:'成都站'},
+								{value:280,name:'雅安站'},
+								{value:320,name:'新津站'},
+								{value:820,name:'绵阳站'},
+								{value:128,name:'南充站'},
+							];
+				var option = {
+						title: {
+					        text: '站点统计图表',
+					        textStyle: {  
+								fontSize:'18',
+				                fontWeight: '800',              //标题颜色  
+				            }, 
+				            x:'center'
+					    },
+					    tooltip : {
+					        trigger: 'axis',
+					        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+					            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+					        }
+					    },
+					    legend: {
+					        data:['站点统计图表'],
+					    },
+					    toolbox : {
+				    		show: true,
+					        feature: {
+					            magicType: {type: ['line', 'bar']},
+					            restore: {},
+					            saveAsImage: {}
+					        },
+					        iconStyle : {
+					        	normal : {
+					        		borderColor : '#03DA8E'
+					        	}
+					        }
+				    	},
+					    grid: {
+					        left: '3%',
+					        right: '4%',
+					        bottom: '3%',
+					        containLabel: true,
+					    },
+					    xAxis: {
+					        type: 'category',
+					        data: dataAxis,
+					        axisTick: {
+				                alignWithLabel: true
+				            },
+				            axisLabel: {
+                                show: true,
+                                textStyle: {
+                                    color: '#72ACD1'
+                                },
+                                interval:0,//横轴信息全部显示  
+                         		rotate:-16,//-30度角倾斜显示  
+                            },
+                            axisLine:{
+				                lineStyle:{
+				                    color:'#72ACD1',
+				                    type : 'dotted'
+				                    // width:8,//这里是为了突出显示加上的，可以去掉
+				                }
+				            }
+					    },
+					    yAxis:  {
+					        type: 'value',
+					        axisLabel: {
+                                show: true,
+                                textStyle: {
+                                    color: '#72ACD1'
+                                }
+                            },
+                            axisLine:{
+				                lineStyle:{
+				                    color:'transparent',
+				                }
+				            }
+					    },
+					    series: [
+					        {
+					            name: '',
+					            type: 'bar',
+					            stack: '总量',
+					            itemStyle: {
+			                    normal: {
+			                    	barBorderRadius: 10,
+			                        color: function(params) { // build a color map as your need.
+			                        		var colorList = [];
+			                        		colorList = [//好，这里就是重头戏了，定义一个list，然后根据所以取得不同的值，这样就实现了，
+												'#0280F0','#038DE6','#0589FE','#2E8CDE','#2EAAE9','#4AADFF','#63B9FC','#81D5EE'
+			                           		];
+				                            return colorList[params.dataIndex]
+			                       		}
+			                    	}
+			                	},
+					            label: {
+					                normal: {
+					                    show: true,
+					                    position: 'top',
+										color:'#FFFFFF'
+					                }
+					            },
+					            data: data
+					        },
+
+					    ]	    
+				};
+				myBarChart.setOption(option,true);
+			}
+		})
+	})
+</script>

@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="greenpass.GreenPassWebMapper">
+		
+		<!-- 测试数据,框架未封装page的时候 -->
+		<select id="testPage1" parameterType="java.util.Map" resultType="com.cdsf.background.greenpass.domain.PageTest">
+			SELECT * FROM tt_pagetest WHERE 1=1 
+			<choose>
+				<when test="map != null and map.currentPage != null and map.rows != null">
+					limit #{map.offset},#{map.rows}
+				</when>
+				<otherwise>
+					limit 0,500
+				</otherwise>	
+			</choose>
+		</select>
+		
+		<!-- 测试数据,框架自动封装page的处理 -->
+		<select id="testPage2" parameterType="java.util.Map" resultType="com.cdsf.background.greenpass.domain.PageTest">
+			SELECT * FROM tt_pagetest 
+		</select>
+		
+		
+		<!-- 查询运单的稽查复核统计  -->
+		<select id="queryAuditDoubleCheck" parameterType="java.util.Map" resultType="com.cdsf.background.greenpass.domain.WayBill">
+			SELECT * FROM t_waybill WHERE 1=1 
+			<if test="parmMap != null and  parmMap.startTime != null">
+				AND audit_time &gt;= #{parmMap.startTime}
+			</if>
+			<if test="parmMap != null and  parmMap.endTime != null">
+				AND audit_time &lt;= #{parmMap.endTime}
+			</if>
+			<if test="parmMap != null and  parmMap.auditStation != null">
+				AND audit_station = #{parmMap.auditStation}
+			</if>
+			<choose>
+				<when test="parmMap != null and parmMap.currentPage != null and parmMap.rows != null">
+					limit #{parmMap.offset},#{parmMap.rows}
+				</when>
+				<otherwise>
+					limit 0,500
+				</otherwise>	
+			</choose>
+		</select>
+		
+		
+		<!-- 查询运单的站点统计  -->
+		<select id="queryStationStatistics" parameterType="java.util.Map" resultType="java.util.Map">
+			SELECT  
+				COUNT(id) as num,audit_station  
+			FROM  t_waybill 
+			WHERE 1=1
+			AND audit_station is not null  
+			AND current_status = 1
+			<if test="parmMap != null and  parmMap.startTime != null">
+				AND audit_time &gt;= #{parmMap.startTime}
+			</if>
+			<if test="parmMap != null and  parmMap.endTime != null">
+				AND audit_time &lt;= #{parmMap.endTime}
+			</if>
+			<if test="parmMap != null and  parmMap.auditStation != null">
+				AND audit_station = #{parmMap.auditStation}
+			</if>
+			GROUP BY audit_station
+			<choose>
+				<when test="parmMap != null and parmMap.currentPage != null and parmMap.rows != null">
+					limit #{parmMap.offset},#{parmMap.rows}
+				</when>
+				<otherwise>
+					limit 0,500
+				</otherwise>	
+			</choose>
+		</select>
+		
+		
+		<!-- 查询站点统计2 -->
+		<select id="queryStationStatistics2" parameterType="java.util.Map" resultType="com.cdsf.background.greenpass.domain.StationInfo">
+				SELECT
+					tw.audit_station AS stationId,
+					COUNT(tw.id) AS totalNum
+				FROM
+				 	t_waybill tw LEFT JOIN t_user tu ON tw.current_auditor_id = tu.id
+				WHERE
+					1=1
+				AND 
+					tw.current_status != 0
+			<if test="@T@notNull(startTime)">
+				AND tw.audit_time &gt;= #{startTime}
+	    	</if>
+	    	<if test="@T@notNull(endTime)">
+				AND tw.audit_time &lt;= #{endTime}
+	    	</if>
+			<if test="@T@notNull(auditStation)">
+				AND tw.audit_station = #{auditStation}
+	    	</if>
+				GROUP BY
+					tw.audit_station
+		</select>
+		
+		
+		
+		<!-- 查询获取所有已稽查的运单 -->
+		<select id="queryAllDoneWayBill" parameterType="java.util.Map" resultType="com.cdsf.background.greenpass.domain.WayBill">
+			SELECT
+			 	wb.id,
+			 	wb.way_bill_no,
+			 	wb.create_time,
+			 	wb.current_status,
+			 	wb.green_truck_plate,
+			 	wb.audit_time,
+			 	wb.audit_station,
+			 	wb.audit_express_way,
+			 	tu.job_num  as  currentAuditorId,
+			 	wb.double_check_auditor_id,
+			 	wb.double_check_status,
+			 	wb.qrcode_path
+			FROM 
+				t_waybill  wb LEFT JOIN t_user tu ON wb.current_auditor_id = tu.id
+			WHERE 1=1 
+			AND current_status != 0
+			<if test="@T@notNull(startTime)">
+				AND audit_time &gt;= #{startTime}
+	    	</if>
+	    	<if test="@T@notNull(endTime)">
+				AND audit_time &lt;= #{endTime}
+	    	</if>
+			<if test="@T@notNull(doubleAuditStatus)">
+				AND double_check_status = #{doubleAuditStatus}
+	    	</if>
+	    		ORDER BY audit_time DESC
+		</select>
+		
+		<!-- 根据id查询运单详情 -->
+		<select id="queryWayBillById"  resultType="com.cdsf.background.greenpass.domain.WayBill">
+			SELECT * FROM t_waybill WHERE 1=1  AND id = #{waybillId}
+		</select>
+		
+		<!-- 得到货品树对象 -->
+		<select id="getCargoTreeData"  resultType="com.cdsf.background.greenpass.domain.CargoTree">
+			SELECT 
+				* 
+			FROM 
+				t_cargo_tree 
+		</select>
+		
+		
+		<!-- 得到运单的图片信息 -->
+		<select id="queryAuditPictureByWaybillId"  resultType="com.cdsf.background.greenpass.domain.AuditPicture">
+			SELECT 
+				flow_id,
+				main_id,
+				picture_name,
+				suffix_name,
+				file_dir_path,
+				file_pic_size,
+				belong_type,
+				create_time
+			FROM 
+				t_audit_picture 
+			WHERE 1=1 
+			AND
+			main_id = #{waybillId}
+		</select>
+		
+		
+		<!-- 修改稽查复核状态 -->
+		<update id="updateDoubleCheckStatus">
+			 UPDATE 
+			 	t_waybill
+			 set
+			 	double_check_status = #{doubleCheckStatus},
+			 	double_check_auditor_id = #{currentUserWorkNo}
+			 WHERE id=#{billId}
+		</update>
+		
+		
+		<!-- 违规车辆信息查询 -->
+		<select id="queryViolationTruckPlate" parameterType="java.util.Map" resultType="com.cdsf.background.greenpass.domain.ViolationTruckInfo">
+			SELECT 
+				green_truck_plate as truckPlate,
+				count(green_truck_plate) as illegalTime
+			FROM 
+				t_waybill 
+			WHERE 
+				1=1 
+			AND
+				audit_conclusion_status = 0
+			AND 
+				current_status = 1
+			<if test="@T@notNullStr(searchKeyWords)">
+				AND green_truck_plate LIKE %{searchKeyWords}%
+	    	</if>
+			GROUP BY green_truck_plate
+			<if test="@T@notNull(startIllegalTimes)">
+				HAVING COUNT(green_truck_plate) &gt;= #{startIllegalTimes}
+	    	</if>
+	    	<if test="@T@notNull(endIllegalTimes)">
+				AND COUNT(green_truck_plate) &lt;= #{endIllegalTimes}
+	    	</if>
+			ORDER BY audit_time DESC
+		</select>
+		
+		
+		<!-- 稽查时段统计 按天来统计的
+		<select id="queryCheckTimeStatistics" parameterType="java.util.Map" resultType="com.cdsf.background.greenpass.domain.AuditTimeStatisticInfo">
+			SELECT
+				DATE_FORMAT(audit_time, '%Y-%m-%d') as auditTimeStr,
+				count(id) as passTimes
+			FROM
+				t_waybill
+		    WHERE 
+			    1=1
+		    AND
+			    audit_time IS NOT NULL  
+			GROUP BY
+				DATE_FORMAT(audit_time, '%Y%m%d')
+			ORDER BY audit_time DESC
+		</select>
+		-->
+		
+		<!-- 稽查时段统计 按每天的小时来统计 -->
+		<select id="queryCheckTimeStatisticsByHours" parameterType="java.util.Map" resultType="com.cdsf.background.greenpass.domain.AuditTimeStatisticInfo">
+			SELECT
+				DATE_FORMAT(audit_time,'%H') as hourStr,
+				count(id) as passTimes
+			FROM
+				t_waybill
+		    WHERE 
+			    1=1
+		    AND
+			    audit_time IS NOT NULL  
+			<if test="@T@notNull(startTime)">
+				AND audit_time &gt;= #{startTime}
+	    	</if>
+	    	<if test="@T@notNull(endTime)">
+				AND audit_time &lt;= #{endTime}
+	    	</if>
+			GROUP BY
+				 DATE_FORMAT(audit_time,'%H')
+		</select>
+		
+		
+		
+		<!-- 打逃金额统计 -->
+		<select id="queryStrikeCashStatistics" parameterType="java.util.Map" resultType="com.cdsf.background.greenpass.domain.FightEscapeInfo">
+			SELECT
+			   SUM(receivables) AS receivables,
+			   SUM(punishableAccount) AS punishableAccount,
+			   SUM(receivables)+SUM(punishableAccount) AS fightEscapCost,
+			   COUNT(tw.id) AS fightEscapeTimes,
+			   tu.job_num AS auditWorkNo,
+			   tu.user_name AS auditorName,
+			   tu.id AS auditorId
+			FROM
+			   t_audit_conclusion ac LEFT JOIN t_waybill tw ON  ac.flow_id = tw.audit_conclusion_flowId 
+			   LEFT JOIN t_user tu ON  tw.current_auditor_id = tu.id 
+			WHERE flow_id in (
+				SELECT 
+					 audit_conclusion_flowId
+			  	FROM 
+					t_waybill
+				WHERE 
+			    audit_conclusion_flowId IS NOT NULL
+			)
+			<if test="@T@notNullStr(auditWorkNo)">
+				AND tu.job_num like %{auditWorkNo}%
+	    	</if>
+			GROUP BY 
+			   tu.id
+			<if test="@T@notNull(startIllegalTimes)">
+				HAVING COUNT(tw.id) &gt;= #{startIllegalTimes}
+	    	</if>
+	    	<if test="@T@notNull(endIllegalTimes)">
+				AND COUNT(tw.id) &lt;= #{endIllegalTimes}
+	    	</if>
+			ORDER BY fightEscapCost DESC,fightEscapeTimes DESC
+		</select>
+		
+		<!-- 打逃金额详情列表统计 -->
+		<select id="queryStrikeCashDetailByAuditorId" parameterType="java.util.Map" resultType="com.cdsf.background.greenpass.domain.FightEscapeInfo">
+			SELECT
+         		tw.id as wayBillId,
+			   	tw.way_bill_no as wayBillNo,
+			   	tw.audit_time AS auditTime,
+			  	tw.second_cargos AS cargos,
+				ac.conclusion_content AS conclusionContent,
+			   	tu.job_num AS auditWorkNo,
+			   	tu.user_name AS auditorName,
+			   	tu.id AS auditorId,
+         		ac.flow_id AS auditConclusionFlowId
+			FROM
+			   t_waybill tw LEFT JOIN t_audit_conclusion ac  ON  ac.flow_id = tw.audit_conclusion_flowId 
+			   LEFT JOIN t_user tu ON  tw.current_auditor_id = tu.id 
+			WHERE 
+         		tw.current_auditor_id = #{auditorId}
+         	<if test="@T@notNull(startTime)">
+				AND tw.audit_time &gt;= #{startTime}
+	    	</if>
+	    	<if test="@T@notNull(endTime)">
+				AND tw.audit_time &lt;= #{endTime}
+	    	</if>
+		</select>
+		
+		
+		<!-- 货品统计 -->
+		<select id="queryCargoStatistic" parameterType="java.util.Map" resultType="com.cdsf.background.greenpass.domain.CargoStatisticInfo">
+				SELECT
+				  way_bill_no AS wayBillNo,
+				  audit_time AS auditTime,
+				  first_cargos AS firstCargos,
+				  second_cargos AS secondCargos,
+				  current_auditor_id AS auditorId,
+				  audit_station AS auditStation,
+				  audit_express_way AS auditExpressWay,
+				  tu.user_name AS auditorName,
+				  tu.job_num AS auditWorkNo
+				FROM
+				  t_waybill tw LEFT JOIN t_user tu ON tw.current_auditor_id = tu.id
+				WHERE 
+				  tw.current_status != 0
+				AND
+				  tw.current_status IS NOT NULL 
+				AND
+				  tw.audit_time IS NOT NULL  
+			<if test="@T@notNull(startTime)">
+				AND tw.audit_time &gt;= #{startTime}
+	    	</if>
+	    	<if test="@T@notNull(endTime)">
+				AND tw.audit_time &lt;= #{endTime}
+	    	</if>
+	    	<if test="@T@notNull(auditStation)">
+				AND tw.audit_station = #{auditStation}
+	    	</if>
+	    	<if test="@T@notNullStr(firstCargoCondition)">
+				AND tw.first_cargos like "%"#{firstCargoCondition}"%"
+	    	</if>		
+		</select>
+		
+		
+		<!-- 查询黑灰名单数据 -->
+		<select id="queryBlackGrayListData" parameterType="java.util.Map" resultType="com.cdsf.background.greenpass.domain.BlackGrayStatisticInfo">
+			SELECT
+			  truck_plate as truckPlate,
+			  count(flow_id) as illegalTimes,
+			  sum(illegal_money) as illegalMoney
+			FROM
+			  t_black_gray_list
+			WHERE 1=1
+			<if test="@T@notNull(startTime)">
+				AND illegal_time &gt;= #{startTime}
+	    	</if>
+	    	<if test="@T@notNull(endTime)">
+				AND illegal_time &lt;= #{endTime}
+	    	</if>  
+			GROUP BY truck_plate
+			ORDER BY illegalTimes DESC
+		</select>
+		
+		
+		<!-- 通过运单id得到黑名单对象 -->
+		<select id="getBlackGrayWayBillListByWayBillId" parameterType="java.lang.String" resultType="com.cdsf.background.greenpass.domain.BlackGrayWayBillList">
+			SELECT 
+			  w.id as wayBillId,
+			  w.green_truck_plate as truckPlate,
+			  w.auditor_axis as axis,
+			  w.current_auditor_id as auditorId,
+			  w.audit_time as illegalTime,
+			  w.audit_station as auditStation,
+			  w.double_check_auditor_id as doubleCheckAuditorId,
+			  ac.receivables as receivableMoney,
+			  ac.punishableAccount as pursueMoney,
+			  SUM(ac.receivables+ac.punishableAccount) AS illegalMoney
+			FROM 
+			  t_waybill w LEFT JOIN t_audit_conclusion ac ON w.audit_conclusion_flowId = ac.flow_id 
+			WHERE ac.flow_id = 
+			  (
+					SELECT  
+						audit_conclusion_flowId
+					FROM 
+						 t_waybill
+					WHERE 
+						 id = #{wayBillId}
+			)
+		</select>
+		
+		<!-- 封装黑名单数据通过wayBillId -->
+		<select id="encapBlackGrayWayBillListByWayBillId" parameterType="java.lang.String" resultType="com.cdsf.background.greenpass.domain.BlackGrayWayBillList">
+			SELECT 
+			  w.id as wayBillId,
+			  w.green_truck_plate as truckPlate,
+			  w.auditor_axis as axis,
+			  w.current_auditor_id as auditorId,
+			  w.audit_time as illegalTime,
+			  w.audit_station as auditStation,
+			  w.double_check_auditor_id as doubleCheckAuditorId,
+			  ac.receivables as receivableMoney,
+			  ac.punishableAccount as pursueMoney,
+			  SUM(ac.receivables+ac.punishableAccount) AS illegalMoney
+			FROM 
+			  t_waybill w LEFT JOIN t_audit_conclusion ac ON w.audit_conclusion_flowId = ac.flow_id 
+			WHERE id = #{wayBillId}
+		</select>
+		
+		
+		
+		<!-- 根据运单id查询是否在黑名单内 -->
+		<select id="queryInBlackGrayListByBillId" parameterType="java.lang.String" resultType="java.lang.Integer">
+			SELECT
+			  count(1)
+			FROM
+			  t_black_gray_list
+			WHERE
+			   way_bill_id = #{wayBillId}
+		</select>
+		
+		
+		
+		<!-- 稽查复核时添加黑名单数据 -->
+		<insert id="addDataToBlackGrayList" parameterType="com.cdsf.background.greenpass.domain.BlackGrayWayBillList">
+			INSERT INTO t_black_gray_list(
+				flow_id,
+				truck_plate,
+				illegal_time,
+				illegal_money,
+				receivable_money,
+				pursue_money,
+				axis,
+				auditor_id,
+				audit_station,
+				double_check_auditor_id,
+				way_bill_id,
+				join_time
+				)
+				VALUES(
+				#{flowId},
+				#{truckPlate},
+				#{illegalTime},
+				#{illegalMoney},
+				#{receivableMoney},
+				#{pursueMoney},
+				#{axis},
+				#{auditorId},
+				#{auditStation},
+				#{doubleCheckAuditorId},
+				#{wayBillId},
+				#{joinTime}
+			)
+	</insert>
+	
+	<!-- 清除稽查取证图片表数据 -->
+	<delete id="deleteAuditPictureDataByWayBillId" parameterType="java.lang.String">  
+       DELETE FROM t_audit_picture WHERE main_id = #{wayBillId}
+	</delete>  
+	
+	<!-- 清除稽查结论表数据 -->
+	<delete id="deleteAuditConclusionDataByWayBillId" parameterType="java.lang.String">  
+      DELETE FROM 
+      		t_audit_conclusion 
+      	WHERE flow_id = 
+			(SELECT audit_conclusion_flowId FROM t_waybill WHERE id=#{wayBillId})
+	</delete>  
+	
+	<!-- 清除运单数据 -->
+	<delete id="deleteWayBillDataByWayBillId" parameterType="java.lang.String">  
+       DELETE FROM t_waybill WHERE id = #{wayBillId}
+	</delete> 
+
+	<!-- 判断机器人闪烁 -->
+	<select id="judgeRobotBlink"  resultType="java.lang.Integer">
+			SELECT
+			  count(1)
+			FROM
+			  t_waybill
+			WHERE
+			   double_check_status = 0
+	</select>
+	
+			
+</mapper>

@@ -1,0 +1,357 @@
+<div id="container">
+	<!-- 头部 -->
+	<div id="header" class="clearfix">
+		<div class="system_left fl">
+			<!-- <img src="src/images/titlepng.png" class="ttImg" alt="" width="80" height="60"> -->
+		</div>
+		<div class="system_tt fl">
+			<img src="src/images/titlepng.png" class="ttImg" alt="" width="80" height="60">
+			<span class="system_tt_mes">四川成渝大数据平台稽查管理系统</span>
+		</div>
+		<div class="system_head fr">
+			<span class="fl" id = "userId" username ='username'>系统管理员</span>
+			<i class="fl">|</i>
+			<span class="loginOut fa fa-power-off"> 退出</span>
+		</div>
+	</div>
+	<!-- 侧边栏导航 -->
+	<div class="menuBox">
+		<div id="menu"></div>
+		<span class="openArrow"></span>
+	</div>
+	<!-- 内容主体 -->
+	<div id="content">
+		
+	</div>
+	<!-- 登录页 -->
+	<div id="loginPage">
+		<!-- 登录页背景图 -->
+		<div class="indexlogo clearfix">
+			<img class="fl" src="src/images/indexlogo.png" class="ttImg" alt="" width="80" height="60">
+			<span class="fl">四川成渝大数据平台稽查管理系统</span>
+		</div>
+		<div class = "loginFailBox" style="display: none;">
+			<img alt="" src="src/images/loginFail.png">
+			<label class = "loginFailLabel"></label>
+		</div>
+		<div class="loginBox">
+			<div class="input-group margin-bottom-sm">
+  				<span class="input-group-addon"><i class="fa fa-user fa-fw"></i></span>
+  				<input type="text" id="user" placeholder="请输入您的账号">
+			</div>
+			<div class="input-group">
+  				<span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
+  				<input type="password" id="pwd" placeholder="请输入您的密码">
+			</div>
+
+			<span class="loginBtn">登&nbsp;&nbsp;录</span>
+		</div>
+		<p class="copytt">www.cygs.com(C) 2017 cygs.com All rights rserved</p>
+	</div>
+</div>
+<!-- 可点击的 机器人 -->
+<div class="dragBox" id="dragBox">
+	<div class="dragMenu"></div>
+</div>
+<!-- 机器人弹窗菜单 -->
+<!-- <div class="moveMenu">
+	<ul>
+		<li class="menu1">功能说明</li>
+		<li class="menu2">政策法规</li>
+		<li class="menu3">稽查技巧</li>
+		<li class="menu4">案例分析</li>
+	</ul>
+	<span class="closeMenu"></span>
+</div> -->
+<!-- 弹层菜单 详情 -->
+<div class="moveMenuContent">
+	<span class="closeMenuContent fa fa-times fa-2x"></span>
+	<div id="MenuContentBox"></div>
+</div>
+
+<!-- loading动画 -->
+<div class="pageloader">
+	<div class="pageloaderOverlay"></div>
+	<div class="pageloader-content">
+		<div class="pageloader-spinner">
+			<div class="loadingAnimation cube1"></div>
+			<div class="loadingAnimation cube2"></div>
+			<div class="loadingAnimation cube3"></div>
+			<div class="loadingAnimation cube4"></div>
+			<span class="loading-message">Loading...</span>
+		</div>
+	</div>
+</div>
+<script rel="script">
+    define(function(require){
+        var base = require("Base"),
+        	slideBar = require('./src/demoData/menu.js'),
+        	alarms  = require('./src/demoData/alarm.js'),
+        	_self; 
+        return base.extend({
+			onInit : function(options){
+				_self = this;
+				_self.loginFn();//登录系统
+				_self.loginOut();//退出
+				_self.dragMenuFn();//拖拽菜单
+				_self.closeDragMenu();// 关闭弹出菜单
+				_self.clickDragMenu();// 点击弹出菜单 弹出详情介绍 
+				_self.closeMoveMenuContent();// 点击弹出菜单后的 关闭按钮 关闭详情弹层
+				// _self.getAlarm();// 查看是否有 异常
+
+				setInterval(_self.getAlarm,2000);
+
+				// _self.shrinkMenu();//收缩菜单
+				// _self.getMenuData( slideBar.slideBar );//加载导航栏
+			},
+			//自定义方法
+			//登录系统
+			loginFn : function(){
+				$('.loginBtn').off('click').on('click',function(){
+					_self.checkLogin();//检测登录 账号 密码
+				});
+				$(window).keydown(function(event){
+				  if (event.keyCode === 13) {
+				  	_self.checkLogin();//检测登录 账号 密码
+				  }
+				});
+			},
+			// 检测登录 账号 密码
+			checkLogin : function(){
+				var loginName = $.trim($("#user").val()),
+					pwd = $.trim($("#pwd").val());
+				// 接口数据调用
+				var option = {};
+				option.data = {
+					"loginName":loginName,
+					"password":pwd
+				};
+				option.url = "/greenpassappwebalpha/app/webstatistics/login.json";
+				option.success = function(data){
+					console.log(data);
+					var _data = data.data;
+					console.log("_data===============:"+JSON.stringify(_data));
+					if(_data.status != 0){
+						$("#user").val("");
+						$("#pwd").val("");
+						$("#loginPage").hide(800);
+						$(".system_head").show(800);
+						$(".dragBox").show(600).css({
+							top : '0px',
+							right : '',
+							left : '70px'
+						});
+						//修改登录的名称
+						var user = _data.content;
+						$("#userId").html(user.trueName);
+						$("#userId").attr("username",user.trueName);
+						_self.getMenuData( slideBar.slideBar );//加载导航栏
+						_self.loadpage({
+							$el : $("#content"),
+							url : "src/webapps/2.html"
+						});
+					}else{
+						//展示后台请求接口出错的情况
+						alert(data.message);
+					}
+				}
+				option.error = function(e){
+					console.log("用户名或密码错误!");
+				}
+				console.log("xxxxxxxxxxxxxloginxxxxxxxxxxxxxx");
+				S.request(option);
+				console.log("xxxxxxxxxxxxxloginxxxxxxxxxxxxxx");
+				/*
+				if (user === "系统管理员" && pwd === "123") {
+					$("#user").val("");
+					$("#pwd").val("");
+					$("#loginPage").hide(800);
+					$(".system_head").show(800);
+					$(".dragBox").show(600).css({
+						top : '100px',
+						right : '20px',
+						left : ''
+					});
+					_self.getMenuData( slideBar.slideBar );//加载导航栏
+					_self.loadpage({
+						$el : $("#content"),
+						url : "src/webapps/7.html"
+					});
+				}
+				*/
+			},
+			// 登录成功 请求导航列表数据
+			getMenuData : function( slideBar){
+				var menu = new zNavigation({
+					ele : $("#menu"),
+					data:slideBar,
+					theme:"black",
+					width:200,
+					speed:100,
+					icon:true,
+					search:true,
+					onInit:function(n){
+					},
+					onClick:function(url){
+						if (!url) return; 
+						if (parseInt(url) === 4) {
+
+						};
+						$("#container").off('click');
+						_self.loadpage({
+							$el : $("#content"),
+							url : "src/webapps/"+url+""
+						});
+					}
+				});
+
+				// 默认让前三个主菜单下子菜单展开
+				for(var i=0;i<$(".submenu").length-2;i++){
+					$(".submenu").eq(i).css("display","block");
+				}
+				
+			},
+			//退出
+			loginOut : function(){
+				$(".loginOut").off('click').on('click',function(){
+					$(".dragBox").fadeOut(600);
+					$("#content").html('');
+					$("#menu").html('');
+					$(".system_head").hide(800);
+					$("#loginPage").fadeIn(600);
+					$(".moveMenu").hide(800);
+					$(".moveMenuContent").hide(800);
+				});
+			},
+			//拖拽菜单
+			dragMenuFn : function(){
+				var dragMenu = new Drag();
+					dragMenu.init({
+						id : "dragBox"
+					});
+				$(".dragMenu").off('dblclick').on('dblclick',function(e){
+					var ev = ev || window.event;
+					$(".moveMenu").show(800);
+				});	
+			},
+			// 关闭弹出菜单
+			closeDragMenu : function(){
+				$(".closeMenu").off('click').on('click',function(){
+					$(".moveMenu").hide(800);
+				});
+			},
+			// 点击弹出菜单 弹出详情介绍 
+			clickDragMenu : function(){
+				$(".moveMenu li").off('click').on('click',function(){
+					var index = ($(this).index()+1);
+					_self.loadpage({
+						$el : $("#MenuContentBox"),
+						url : "src/webapps/menuPage/menu"+index+".html"
+					});
+					$(".moveMenuContent").show(800);
+				});
+			},
+			// 点击弹出菜单后的 关闭按钮 关闭详情弹层
+			closeMoveMenuContent : function(){
+				$(".closeMenuContent").off('click').on('click',function(){
+					$(".moveMenuContent").hide(800);
+				});
+			},
+			// 查看是否有 异常
+			getAlarm : function(){
+				console.log("xxxxxxxxxxxxxxxx  getAlarm()    xxxxxxxxxxxxxxx");
+				var requestOption = {};
+				requestOption.data = {
+						
+				};
+				requestOption.url = "/greenpassappwebalpha/app/webstatistics/judgerobot.json";
+				requestOption.success = function(data){
+					//循环填充数据
+					var _data = data.data;
+					if(_data.status != 0){
+						if(_data.content == true){
+							$(".dragBox").css({
+							background : "url(src/images/robot4s.gif) no-repeat center center",
+							backgroundSize : "cover",
+							width : "68px"
+							});
+							$(".dragMenu").off('dblclick').on('dblclick',function(e){
+								var ev = ev || window.event;
+								_self.loadpage({
+									$el : $("#content"),
+									url : "src/webapps/2.html",
+									callback : function(){
+										$(".dragMenu").off('dblclick').on('dblclick',function(e){
+											var ev = ev || window.event;
+											$(".moveMenu").show(800);
+										});	
+										$(".dragBox").css({
+											background : "url(src/images/robot4.png) no-repeat center center",
+											backgroundSize : "cover",
+											width : "75px"
+										});
+									}
+								});
+							});	
+						}
+					}else{
+						alert(_data.message);
+					}
+				}
+				requestOption.error = function(e){
+					console.log("后台数据接口出错!");
+				}
+				S.request(requestOption);
+				// var alarm = alarms;
+				// if (alarm){
+				// 	alarm = alarm.alarm[0];
+				// 	if (alarm.isAlarm == "true"){
+				// 		$(".dragBox").css({
+				// 			background : "url(src/images/robot4s.gif) no-repeat center center",
+				// 			backgroundSize : "cover",
+				// 			width : "68px"
+				// 		});
+				// 		$(".dragMenu").off('dblclick').on('dblclick',function(e){
+				// 			var ev = ev || window.event;
+				// 			_self.loadpage({
+				// 				$el : $("#content"),
+				// 				url : "src/webapps/2.html",
+				// 				callback : function(){
+				// 					$(".dragMenu").off('dblclick').on('dblclick',function(e){
+				// 						var ev = ev || window.event;
+				// 						$(".moveMenu").show(800);
+				// 					});	
+				// 					$(".dragBox").css({
+				// 						background : "url(src/images/robot4.png) no-repeat center center",
+				// 						backgroundSize : "cover",
+				// 						width : "75px"
+				// 					});
+				// 				}
+				// 			});
+				// 		});	
+				// 	}
+				// }
+			},
+			//收缩菜单
+			shrinkMenu : function(){
+				$(".menuBox").hover(function(){
+					$(this).css({
+						left : 0,
+					});
+					$("#content").css({
+						left : "200px"
+					});
+					$(".openArrow").fadeOut(600);
+				},function(){
+					$(this).css({
+						left : "-200px",
+					});
+					$("#content").css({
+						left : 0
+					});
+					$(".openArrow").fadeIn(600);
+				});
+			}
+		})
+	})
+</script>

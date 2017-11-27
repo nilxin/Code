@@ -1,0 +1,692 @@
+<div id="InspectionReview">
+	<h3>稽查复核</h3>
+	<!-- 稽查复核条件 -->
+	<div class="checkTime clearfix">
+		<div class="checkTime_box fl">
+			<span>
+				<input type="text" placeholder="开始时间" name="startTime" id="startTime" class="Wdate startTime" onFocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'endTime\')||\'%y-%M-{%d-1}\'}'})">
+			</span>
+			<span class="timeTo">至</span>
+			<span>
+				<input type="text" placeholder="结束时间" name="endTime" id="endTime" class="Wdate endTime" onFocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'startTime\')}',maxDate:'%y-%M'})">
+			</span>
+		</div>
+		<div class="checkTime_btn fl">
+			<span class="doubleAuditBox">
+				<select name="" id="doubleAuditStatus">
+					<option value="-1">--请选择--</option>
+					<option value="0">未复核</option>
+					<option value="1">复核通过</option>
+					<option value="2">复核未通过</option>
+				</select>
+			</span>
+			<span class="statistics">统&nbsp;计</span>
+		</div>
+		<div class="pagingBox">
+			<a class="prevBtn">上一页</a>当前第<span class="nowPage">10</span>页\共<span class="totalPage">20</span>页<a class="nextBtn">下一页</a>
+		</div>
+	</div>
+	<!-- 稽查复核表格展示 -->
+	<div class="tableBox">
+		<div class="table_head clearfix">
+			<span class="w25">运单号</span>
+			<span class="w25">稽查时间</span>
+			<span class="w25">稽查工号</span>
+			<span class="w25">稽查复核</span>
+		</div>
+		<div id="table_body_box" class="table_body_box">
+			<ul class="table_body">
+				
+			</ul>
+		</div>
+	</div>
+</div>
+<!-- 稽查复核详情展示 -->
+<div id="reviewDetails">
+	<h3>四川成渝高速公路有限公司成雅分公司鲜活车稽查登记表</h3>
+	<a href="javascript:;" class="closeInfo">关&nbsp;闭</a>
+	<div class="reviewDetailsBox clearfix">
+		<div class="reviewDetails_table">
+			<div class="reviewDetails_table_head clearfix">
+				<span class="w14">车牌号</span>
+				<span class="w14">鲜活品类</span>
+				<span class="w14">车辆载重</span>
+				<span class="w14">车辆轴数</span>
+				<span class="w14">稽查结论</span>
+				<span class="w14">复核结论</span>
+				<span class="w14">是否加入黑名单</span>
+			</div>
+			<div class="reviewDetails_table_body" id="reviewDetails_table_body">
+				<ul class="reviewDetails_body">
+					<!-- <li class="clearfix">
+						<span class="w20">川A12345</span>
+						<span class="w20">1234556</span>
+						<span class="w20">鲜活蔬菜</span>
+						<span class="w20">符合绿通车政策</span>
+						<span class="w20">
+							<a class="qualified">正常</a>
+							<a class="abnormal">异常</a>
+						</span>
+					</li> -->
+				</ul>
+			</div>
+		</div>
+		<div class="reviewDetails_pic" id="reviewDetails_pic">
+			<h2>取证图片</h2>
+			<ul class="clearfix" id="ul_picInfo">
+				<!-- <li class="fl">
+					<img src="src/images/car/car.png" alt="" width="">
+				</li>
+				<li class="fl">
+					<img src="src/images/car/car.png" alt="" width="">
+				</li>
+				<li class="fl">
+					<img src="src/images/car/car.png" alt="" width="">
+				</li>
+				<li class="fl">
+					<img src="src/images/car/car.png" alt="" width="">
+				</li>
+				<li class="fl">
+					<img src="src/images/car/car.png" alt="" width="">
+				</li>
+				<li class="fl">
+					<img src="src/images/car/car.png" alt="" width="">
+				</li>
+				<li class="fl">
+					<img src="src/images/car/car.png" alt="" width="">
+				</li>
+				<li class="fl">
+					<img src="src/images/car/car.png" alt="" width="">
+				</li>
+				<li class="fl">
+					<img src="src/images/car/car.png" alt="" width="">
+				</li>
+				<li class="fl">
+					<img src="src/images/car/car.png" alt="" width="">
+				</li>
+				<li class="fl">
+					<img src="////src/images/car/car.png" alt="" width="">
+				</li> -->
+			</ul>
+		</div>
+	</div>
+	
+	<!-- <div style="width:800px;height:600px;position: absolute;top: 50%;left: 50%;margin-top: -300px;margin-left: -400px;background:url() no-repeat center center;">
+		
+	</div> -->
+
+</div>
+<script rel="script">
+	
+	/* $(document).ready(function(){
+		$("#site")
+	}); */
+	$(function(){
+		//$("#site"),循环填充DOM
+		var $ul = $(".table_body");
+		
+
+		
+	});
+
+     define(function(require){
+         var base = require("Base"),
+        	defaultPageIndex =1,
+        	defaultPageRows=10,
+        	_self,
+        	totalPage,
+        	totalRows; 
+
+        return base.extend({
+			onInit : function(options){
+				_self = this;
+				_self.statisticsClick();//统计按钮  点击事件
+				_self.reviewDataClick();//点击每条数据 查看复核详情
+				_self.clickpagingBtn();//上一页 下一页
+				
+				// 绘制数据
+				// var	drawData = function(default_pageIndex,default_pageRows){
+				// 	var requestOption = {};
+				// 	requestOption.data = {
+				// 			"page.index":default_pageIndex,
+				// 			"page.rows":default_pageRows
+				// 		};
+				// 	requestOption.url = "/greenpassappweb/app/webstatistics/getallwaybill.json";
+				// 	requestOption.success = function(data){
+				// 		//循环填充数据
+				// 		var _data = data.data;
+				// 		if(_data.status != 0){
+				// 			var $ul = $(".table_body");
+				// 			var dataContent = _data.content;
+				// 			// console.log("-------dataContent--------");
+				// 			// console.log(dataContent.list);
+				// 			// console.log("dataContent.list.length : "+dataContent.list.length);
+				// 			// console.log(dataContent.page);
+				// 			// console.log(dataContent.total);
+				// 			// console.log(dataContent.rows);
+				// 			totalRows = dataContent.total;
+				// 			if(Math.ceil(totalRows/default_pageRows) <= 0){
+				// 				totalPage = 1;
+				// 			}else{
+				// 				totalPage = Math.ceil(totalRows/default_pageRows);
+				// 			}
+				// 			// console.log(totalPage);
+				// 			$(".totalPage").html(totalPage);
+				// 			var data_list = dataContent.list;
+				// 			// var node = $("<li class='reviewData clearfix'></li>");
+				// 			// var cloneNode;
+				// 			for(var i=0,len=data_list.length;i<len;i++){
+
+				// 				var node = $("<li class='reviewData clearfix'></li>");
+
+				// 				var $waybillNo = $("<span class='w25' wayBillId="+data_list[i].id+">"+data_list[i].wayBillNo+"</span>");
+				// 				var $auditTimestr = $("<span class='w25' wayBillId="+data_list[i].id+">"+data_list[i].auditTimestr+"</span>");
+				// 				var $currentAuditorId = $("<span class='w25' wayBillId="+data_list[i].id+">230380019</span>");
+				// 				if(data_list[i].doubleCheckStatus == "" || data_list[i].doubleCheckStatus == null || data_list[i].doubleCheckStatus == 'null' || data_list[i].doubleCheckStatus == undefined || data_list[i].doubleCheckStatus == 'undefined' ){
+				// 					var $currentStatus = $("<span class='w25' wayBillId="+data_list[i].id+">未复核</span>");
+				// 				}else if(data_list[i].doubleCheckStatus == 1){
+				// 					var $currentStatus = $("<span class='w25' wayBillId="+data_list[i].id+">复核通过</span>");
+				// 				}else if(data_list[i].doubleCheckStatus == 2){
+				// 					var $currentStatus = $("<span class='w25' wayBillId="+data_list[i].id+">复核未通过</span>");
+				// 				}
+				// 				node.append($waybillNo);
+				// 				node.append($auditTimestr);
+				// 				node.append($currentAuditorId);
+				// 				node.append($currentStatus);
+				// 				// cloneNode = node.clone(true);
+				// 				$(".table_body").append(node);
+				// 			}
+				// 			// $(".table_body").append(cloneNode);
+							
+				// 		}else{
+				// 			alert();
+				// 		}
+				// 	}
+				// 		requestOption.error = function(e){
+				// 		console.log("后台数据接口出错!");
+				// 	}
+				// 	S.request(requestOption);
+				// };
+
+				//初始化的时候设置当前页为第一页,计算获取总页数
+				$(".nowPage").html(1);
+				$(".totalPage").html(1);
+				var default_pageIndex = 1;
+				var default_pageRows = 10;
+				_self.drawData(default_pageIndex,default_pageRows);
+				
+				// 改变选中菜单背景
+				this.menuBgChange();
+		
+				
+				
+				$('#table_body_box').mCustomScrollbar({//初始化表格滚动条
+					mouseWheelPixels:80,
+					scrollButtons:{
+						enable:false,
+						scrollType:"continuous",
+						scrollSpeed:20,
+						scrollAmount:40
+					},
+				 	horizontalScroll:false,
+				});
+				$("#reviewDetails_pic").mCustomScrollbar({//初始化复核详情 取证图片滚动条
+					mouseWheelPixels:100,
+					scrollButtons:{
+						enable:false,
+						scrollType:"continuous",
+						scrollSpeed:20,
+						scrollAmount:40
+					},
+				 	horizontalScroll:false,
+				});
+
+				
+			},
+			
+
+			//统计按钮  点击事件
+			statisticsClick : function(){
+				var startTime,endTime,auditStation;
+				$("#container").off('click','.statistics').on('click','.statistics',function(){
+					// startTime = $("#startTime").val();
+					// endTime = $("#endTime").val();
+					// auditStation = $("#auditStation").val();
+					// console.log("startTime:"+startTime);
+					// console.log("endTime"+endTime);
+					// console.log("auditStation"+auditStation);
+
+					// //if (!(startTime !== "" && endTime !== "" && auditStation !== "")) return;
+					// 	alert(startTime+"---"+endTime+"---"+auditStation)
+					var doubleAuditStatus =  $("#doubleAuditStatus").val();
+					var startTime = $("#startTime").val();
+					var endTime = $("#endTime").val();
+					// var nowPageNum = parseInt($(".nowPage").html(), 10);
+					$(".table_body").empty();
+					//清空后每次统计查询都是第一页了
+					var nowPageNum = 1;
+					$(".nowPage").html(nowPageNum);
+					if(S.isEmpty(startTime)){
+						startTime = null;
+					}
+					if(S.isEmpty(endTime)){
+						endTime = null;
+					}
+					_self.drawData(nowPageNum,defaultPageRows,startTime,endTime,doubleAuditStatus);
+				});
+			},
+
+
+			//绘制详情页数据
+			drawDetailData :function(waybillId){
+				$(".reviewDetails_body").empty();
+				var requestOption = {};
+				requestOption.data = {
+						"waybillId":waybillId
+					};
+				requestOption.url = "/greenpassappweb/app/webstatistics/doublecheckdetail.json";
+				requestOption.success = function(data){
+					//循环填充数据
+					var _data = data.data;
+					if(_data.status != 0){
+						var dataContent = _data.content;
+
+						var node = $("<li class='clearfix'></li>");
+						var cloneNode;
+						var $trckplateNo = $("<span class='w14'>"+dataContent.greenTruckPlate+"</span>");
+						var cargoName = '';
+						if(dataContent.displayCargoName == '' || dataContent.displayCargoName == undefined || dataContent.displayCargoName == null ){
+							cargoName = '鲜货';
+						}else{
+							cargoName = dataContent.displayCargoName;
+						}
+						var $cargo = $("<span class='w14'>"+cargoName+"</span>");
+
+						var  currentMass = 'N/A';
+						if(dataContent.currentMass == '' || dataContent.currentMass == undefined || dataContent.currentMass == null ){
+							currentMass = 'N/A';
+						}else{
+							currentMass = dataContent.currentMass+"(吨)";
+						}
+						var $currentMass = $("<span class='w14'>"+currentMass+"</span>");
+
+
+						var  auditorAxis = 'N/A';
+						if(dataContent.auditorAxis == '' || dataContent.auditorAxis == undefined || dataContent.auditorAxis == null ){
+							auditorAxis = 'N/A';
+						}else{
+							auditorAxis = dataContent.auditorAxis;
+						}
+						var $auditorAxis = $("<span class='w14'>"+auditorAxis+"</span>");
+
+						if(dataContent.auditConclusionStatus == 0){
+							var $auditConclusionStatus = $("<span class='w14'>未通过</span>");
+						}else{
+							var $auditConclusionStatus = $("<span class='w14'>合格放行</span>");
+						}
+						if(dataContent.doubleCheckStatus == '' || dataContent.doubleCheckStatus == undefined || dataContent.doubleCheckStatus == 0 || dataContent.doubleCheckStatus == null){
+							// 未复核  
+							var $doubleCheckStatus = $("<span class='w14' id = 'doublecheckId'></span>");
+							var $qualified = $("<span style='width:50%;cursor:pointer;' class='qualified' checkStatus='1' billId = "+dataContent.id+">正常</span>");
+							var $abnormal = $("<span style='width:50%;cursor:pointer;' class='abnormal' checkStatus = '2' billId = "+dataContent.id+">异常</span>");
+							$doubleCheckStatus.append($qualified);
+							$doubleCheckStatus.append($abnormal);
+						}else if(dataContent.doubleCheckStatus == 1){
+							// 复核通过
+							var $doubleCheckStatus = $("<span class='w14'>复核通过</span>");
+						}else if(dataContent.doubleCheckStatus == 2){
+							// 复核未通过
+							var $doubleCheckStatus = $("<span class='w14'>复核未通过</span>");
+						}
+						//是否在黑名单内
+						if(_data.inBlackGrayList){
+							var $blackGray = $("<span class='w14'>已加入黑名单</span>");
+						}else{
+							var $blackGray = $("<span class='w14' id = 'blackcheckId'></span>");
+							var $isBlack = $("<span style='width:30%;cursor:pointer;' class='isBlack' billId = "+dataContent.id+">是</span>");
+							// var $isBlack = $("<span class='isBlack' billId = "+dataContent.id+">是</span>");
+							$blackGray.append($isBlack);
+							if($("#userId").attr("username") == "系统管理员"){
+								var $isDelete = $("<span style='width:70%;cursor:pointer;' class='isDelete'  billId = "+dataContent.id+">删除脏数据</span>");
+								$blackGray.append($isDelete);
+							}
+							// $blackGray.append($isWhite);
+						}
+						node.append($trckplateNo);
+						node.append($cargo);
+						node.append($currentMass);
+						node.append($auditorAxis);
+						node.append($auditConclusionStatus);
+						node.append($doubleCheckStatus);
+						node.append($blackGray);
+						cloneNode = node.clone(true);
+						$(".reviewDetails_body").append(cloneNode);
+
+						//给按钮绑定hover事件??????
+						// $(".qualified",".abnormal",".isBlack",".isDelete").on({
+						// 	mouseover:function(){$(this).css("background-color","#dcdde0")},
+						// 	mouseout:function(){$(this).css("background-color","");}
+						// })
+
+						//绘制图片展示 pictureInfo
+
+						$("#ul_picInfo").empty();
+						var pictureInfo = _data.pictureInfo;
+						console.log("图片张数为"+pictureInfo.length);
+						// var picNode = $("<li class='fl'></li>");
+						// var clonePicNode;
+						var serverName = "http://192.168.0.253:8080/fileupload";
+						for(var i=0,len=pictureInfo.length;i<len;i++){
+
+							var picNode = $(`<li style="position:relative;" class='fl'><div style="top:0;right:0;padding:5px 0 10px 0;" class='imgTime'>取证时间： <span>${pictureInfo[i].createTimeStr}</span></div></li>`);
+
+							console.log("图片路径拼接 :"+serverName+pictureInfo[i].fileDirPath);
+							var $img = $("<img src="+serverName+pictureInfo[i].fileDirPath+" alt='' width=''>");
+							picNode.append($img);
+							clonePicNode = picNode.clone(true);
+							$("#ul_picInfo").append(picNode);
+						}
+						// $("#ul_picInfo").append(clonePicNode);
+						// 给图片绑定点击弹窗事件
+
+						$("#ul_picInfo li img").on('click',function(){
+							if($("#content .imgClickBig").length>0){
+								$("#content .imgClickBig").remove();
+								
+							}else{
+								var src=$(this).attr("src");
+								var srcTime=($(this).prev().find("span").html());
+								var alertImg=$(`
+									<div class="imgClickBig" style="max-width:800px;max-height:600px;overflow:hidden;position: absolute;top: 50%;left: 50%;margin-top: -300px;margin-left: -400px;;z-index:3;cursor: pointer;box-shadow:0 0 0 8px #fff;">
+										<img src="${src}" alt='' width='800px' height='600px'>
+										<div style="position:absolute;top:0;right:0;padding:5px;color:#f00;font-size:16px;" class='imgTime'>${srcTime}</div>
+									</div>
+								`)
+								$("#content").append(alertImg);
+
+								$("#content .imgClickBig").on("click",function(){
+									$(this).remove();
+								})
+							}
+
+						})
+	
+					}else{
+						alert(_data.message);
+					}
+				}
+				requestOption.error = function(e){
+					console.log("后台数据接口出错!");
+				}
+				S.request(requestOption);
+				
+			},
+
+
+			//点击每条数据 查看复核详情
+			reviewDataClick : function(){
+				$("#container").off('click','.reviewData').on('click','.reviewData',function(e){
+					//取数据  绘制DOM
+					var  currentWayBillId = $(e.target).attr("wayBillId");
+					console.log("currentWayBillId:       "+currentWayBillId);
+					_self.drawDetailData(currentWayBillId);
+					//显示
+					$("#reviewDetails").show(600);
+
+					_self.determineStatus();//复核详情 点击 正常 和 异常 按钮\
+					_self.blackGrayStatus();//是否加入黑名单
+					_self.closeInfoClick();//复核详情 点击关闭按钮
+				});
+			},
+
+
+			// 黑名单的操作   点击是 或者  否
+			blackGrayStatus : function(){
+				$("#container").off('click','.isBlack').on('click','.isBlack',function(e){
+					// alert('正常');
+					$.zConfirm("确认加入黑名单？",function(){
+						var  wayBillId = $(e.target).attr("billId");
+						var  requestOption = {};
+						requestOption.data = {
+							"wayBillId":wayBillId
+						};
+						requestOption.url = "/greenpassappweb/app/webstatistics/putdatatoblacklist.json";
+						requestOption.success = function(data){
+							//更改状态,直接显示成功
+							var _data = data.data;
+							if(_data.status != 0){
+								$("#blackcheckId").empty();
+								$("#blackcheckId").html("已加入黑名单");
+							}else{
+								alert(_data.message);
+							}		
+							
+						}
+						requestOption.error = function(e){
+							console.log("后台数据接口出错!");
+						}
+						S.request(requestOption);
+					});
+				});
+
+				$("#container").off('click','.isDelete').on('click','.isDelete',function(e){
+					// alert('正常');
+					var  wayBillId = $(e.target).attr("billId");
+					var  requestOption = {};
+					requestOption.data = {
+						"wayBillId":wayBillId
+					};
+					requestOption.url = "/greenpassappweb/app/webstatistics/delete.json";
+					requestOption.success = function(data){
+						//更改状态,直接显示成功
+						var _data = data.data;
+						if(_data.status != 0){
+							$.zAlert(_data.message);
+							//删除数据后,重新请求表格数据
+							// $(".table_body").empty();
+							// _self.drawData(nowPageNum,4);
+						}else{
+							$.zAlert(_data.message);
+						}
+					}
+					requestOption.error = function(e){
+						console.log("后台数据接口出错!");
+					}
+					S.request(requestOption);
+				});
+
+			},
+
+
+
+			//复核详情 点击 正常 和 异常 按钮
+			determineStatus : function(){
+				$("#container").off('click','.qualified').on('click','.qualified',function(e){
+					// alert('正常');
+					var  billId = $(e.target).attr("billId");
+					var  requestOption = {};
+					requestOption.data = {
+						"billId":billId,
+						"doubleCheckStatus":1
+					};
+					requestOption.url = "/greenpassappweb/app/webstatistics/doublecheck.json";
+					requestOption.success = function(data){
+						//更改状态,直接显示成功
+						var _data = data.data;
+						$.zConfirm("确定复核结论为：正常？",function(){
+							if(_data.status != 0){
+								$("#doublecheckId").empty();
+								// var  $qualifiedstatus = $("<span class='w20'>复核通过</span>");
+								// $("#doublecheckId").append($qualifiedstatus);
+								$("#doublecheckId").html("复核通过");
+							}else{
+								alert(_data.message);
+							}
+						})
+					}
+					requestOption.error = function(e){
+						console.log("后台数据接口出错!");
+					}
+					S.request(requestOption);
+				});
+
+				$("#container").off('click','.abnormal').on('click','.abnormal',function(e){
+					// alert('异常');
+					var  billId = $(e.target).attr("billId");
+					var  requestOption = {};
+					requestOption.data = {
+						"billId":billId,
+						"doubleCheckStatus":2
+					};
+					requestOption.url = "/greenpassappweb/app/webstatistics/doublecheck.json";
+					requestOption.success = function(data){
+						//更改状态,直接显示复核失败
+						var _data = data.data;
+						$.zConfirm("确定复核结论为：异常？",function(){
+								if(_data.status != 0){
+									$("#doublecheckId").empty();
+									// var  $abnormal = $("<span class='w20'>复核不通过</span>");
+									// $("#doublecheckId").append($abnormal);
+									$("#doublecheckId").html("复核不通过");
+								}else{
+									alert(_data.message);
+								}
+						})
+						
+					}
+					requestOption.error = function(e){
+						console.log("后台数据接口出错!");
+					}
+					S.request(requestOption);
+				})
+			},
+			//复核详情 点击关闭按钮
+			closeInfoClick : function(){
+				$("#container").off('click','.closeInfo').on('click','.closeInfo',function(){
+					$("#reviewDetails").hide(600);
+				});
+			},
+			
+			
+			//翻页时填充数据并绘制DOM
+			drawData : function(default_pageIndex,default_pageRows,startTime,endTime,doubleAuditStatus){
+				var requestOption = {};
+				requestOption.data = {
+						"page.index":default_pageIndex,
+						"page.rows":default_pageRows,
+						"startTime":startTime,
+						"endTime":endTime,
+						"doubleAuditStatus":doubleAuditStatus
+					};
+				requestOption.url = "/greenpassappweb/app/webstatistics/getallwaybill.json";
+				requestOption.success = function(data){
+					//循环填充数据
+					var _data = data.data;
+					if(_data.status != 0){
+						var $ul = $(".table_body");
+						var dataContent = _data.content;
+						totalRows = dataContent.total;
+						if(Math.ceil(totalRows/default_pageRows) <= 0){
+							totalPage = 1;
+						}else{
+							totalPage = Math.ceil(totalRows/default_pageRows);
+						}
+						$(".totalPage").html(totalPage);
+						var data_list = dataContent.list;
+						// var node = $("<li class='reviewData clearfix'></li>");
+						// var cloneNode;
+						for(var i=0,len=data_list.length;i<len;i++){
+							var node = $("<li class='reviewData clearfix'></li>");
+
+							var $waybillNo = $("<span class='w25' wayBillId="+data_list[i].id+">"+data_list[i].wayBillNo+"</span>");
+							var $auditTimestr = $("<span class='w25' wayBillId="+data_list[i].id+">"+data_list[i].auditTimestr+"</span>");
+							var $currentAuditorId = $("<span class='w25' wayBillId="+data_list[i].id+">"+data_list[i].currentAuditorId+"</span>");
+							if(data_list[i].doubleCheckStatus == "" || data_list[i].doubleCheckStatus == null || data_list[i].doubleCheckStatus == 'null' || data_list[i].doubleCheckStatus == undefined || data_list[i].doubleCheckStatus == 'undefined' ){
+								var $currentStatus = $("<span class='w25' wayBillId="+data_list[i].id+">未复核</span>");
+							}else if(data_list[i].doubleCheckStatus == 1){
+								var $currentStatus = $("<span class='w25' wayBillId="+data_list[i].id+">复核通过</span>");
+							}else if(data_list[i].doubleCheckStatus == 2){
+								var $currentStatus = $("<span class='w25' wayBillId="+data_list[i].id+">复核未通过</span>");
+							}
+							node.append($waybillNo);
+							node.append($auditTimestr);
+							node.append($currentAuditorId);
+							node.append($currentStatus);
+							// cloneNode = node.clone(true);
+							$(".table_body").append(node);
+						}
+						// $(".table_body").append(cloneNode);
+					}else{
+						alert(_data.message);
+					}
+				}
+				requestOption.error = function(e){
+					console.log("后台数据接口出错!");
+				}
+				S.request(requestOption);
+			},
+
+			//上一页 下一页
+			clickpagingBtn : function(){
+				$("#container").off('click','.prevBtn').on('click','.prevBtn',function(){
+					var nowPageNum = parseInt($(".nowPage").html(), 10);
+					if (nowPageNum <= 1){
+						$.zAlert("已经是第一页");
+						return;
+					}
+					$(".nowPage").html(--nowPageNum);
+					//数据填充   清空DOM 重新绘制
+					//数据填充   清空DOM 重新绘制
+					$(".table_body").empty();
+					var doubleAuditStatus =  $("#doubleAuditStatus").val();
+					var startTime = $("#startTime").val();
+					var endTime = $("#endTime").val();
+					var nowPageNum = parseInt($(".nowPage").html(), 10);
+					$(".table_body").empty();
+					if(S.isEmpty(startTime)){
+						startTime = null;
+					}
+					if(S.isEmpty(endTime)){
+						endTime = null;
+					}
+					_self.drawData(nowPageNum,defaultPageRows,startTime,endTime,doubleAuditStatus);
+				});
+				$("#container").off('click','.nextBtn').on('click','.nextBtn',function(){
+					var nowPageNum = parseInt($(".nowPage").html(), 10);
+					var totalNum = parseInt($(".totalPage").html(), 10);
+					if (nowPageNum >= totalNum){
+						$.zAlert("已经是最后一页");
+						return;
+					}
+					$(".nowPage").html(++nowPageNum);
+					//数据填充   清空DOM 重新绘制
+					$(".table_body").empty();
+					var doubleAuditStatus =  $("#doubleAuditStatus").val();
+					var startTime = $("#startTime").val();
+					var endTime = $("#endTime").val();
+					var nowPageNum = parseInt($(".nowPage").html(), 10);
+					$(".table_body").empty();
+					if(S.isEmpty(startTime)){
+						startTime = null;
+					}
+					if(S.isEmpty(endTime)){
+						endTime = null;
+					}
+					_self.drawData(nowPageNum,defaultPageRows,startTime,endTime,doubleAuditStatus);
+				});
+			},
+			// 点击导航，当前背景色改变
+			menuBgChange: function(){
+
+				$(".submenu li a").on('click',function(){
+					$(".submenu li a").css("background","");
+					$(".submenu li a").css("color","#222");
+					$(this).css({
+						"background":"#006ab9",
+						"color":"#f0f0f0"
+					});
+				})
+			}
+		})
+	}) 
+</script>

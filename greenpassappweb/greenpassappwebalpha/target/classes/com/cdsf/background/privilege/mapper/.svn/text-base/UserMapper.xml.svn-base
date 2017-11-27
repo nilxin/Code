@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="greenpass.UserMapper">
+		
+	<select id="queryExistUser" parameterType="java.util.Map" resultType="com.cdsf.background.privilege.domain.User">
+		SELECT
+			 USER_NAME AS trueName,
+			 LOGIN_NAME AS loginName,
+			 JOB_NUM AS workNo
+		FROM 
+			T_USER
+		WHERE 
+			1=1 
+		AND 
+			login_name = #{loginName} 
+		AND 
+			login_pwd = #{password}
+	</select>	
+	
+		
+</mapper>

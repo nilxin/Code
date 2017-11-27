@@ -1,0 +1,60 @@
+{
+    id: '100000',
+    text: '绿通车鲜活产品目录',
+    children: [
+        {
+            id: '110000',
+            text: '新鲜蔬菜',
+            children: [
+                {
+                    id: '111000',
+                    text: '瓜类',
+                    leaf: true
+                },
+                {
+                    id: '112000',
+                    text: '茄果类',
+                    children: [
+                        {
+                            id: '112100',
+                            text: '青椒',
+                            leaf: true
+                        },
+                        {
+                            id: '112200',
+                            text: '茄子',
+                            leaf: true
+                        }
+                    ]
+                },
+                {
+                    id: '113000',
+                    text: '豆类',
+                    leaf: true
+                }
+            ]
+        },
+        {
+            id: '120000',
+            text: '新鲜水果',
+            children: [
+                {
+                    id: '121000',
+                    text: '仁果类',
+                    children: [
+                        {
+                            id: '121100',
+                            text: '苹果',
+                            leaf: true
+                        },
+                        {
+                            id: '121200',
+                            text: '梨',
+                            leaf: true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

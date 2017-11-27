@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="db.DbMapper">
+
+	<!-- 批次查询 -->
+	<select id="searchNameByName" parameterType="db.SearchName"
+		resultType="int" statementType="STATEMENT">
+		select count(${searchField}) from
+		${tableName} where
+		${searchField}='${name}'
+		<if test="@T@notNull(where)"> ${where} </if>
+	</select>
+	<delete id="deleteObjectInt" parameterType="db.DeleteObject"
+		statementType="STATEMENT">
+		delete from ${tableName} where ${tableField} =${intId}
+	</delete>
+	<delete id="deleteObjectStr" parameterType="db.DeleteObject"
+		statementType="STATEMENT">
+		delete from ${tableName} where ${tableField} ='${strId}'
+	</delete>
+	<delete id="deleteObjectListInt" parameterType="java.util.Map"
+		statementType="STATEMENT">
+		delete from ${tableName} where ${tableField} in
+		<foreach collection="ids" open="(" separator="," close=")"
+			item="id">
+			${id}
+		</foreach>
+	</delete>
+	<delete id="deleteObjectListStr" parameterType="java.util.Map"
+		statementType="STATEMENT">
+		delete from ${tableName} where ${tableField} in
+		<foreach collection="ids" open="(" separator="," close=")"
+			item="id">
+			'${id}'
+		</foreach>
+	</delete>
+	<update id="updateObjectByField" statementType="STATEMENT"
+		parameterType="db.UpdateOneField">
+		update ${tableName} set ${dataFieldName} =
+		<if test="@T@notNull(intData)"> ${intData} </if>
+		<if test="@T@notNull(strData)"> '${strData}' </if>
+		where ${whereFieldName}=
+		<if test="@T@notNull(whereDataInt)"> ${whereDataInt} </if>
+		<if test="@T@notNull(whereDataStr)"> '${whereDataStr}' </if>
+
+	</update>
+</mapper>
+

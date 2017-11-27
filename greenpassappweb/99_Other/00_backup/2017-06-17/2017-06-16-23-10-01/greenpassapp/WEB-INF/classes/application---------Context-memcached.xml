@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://dev.cdsf.com/webmvc
+           http://dev.cdsf.com/webmvc.xsd
+           http://drools.org/schema/drools-spring
+           http://drools.org/schema/drools-spring.xsd">
+	<!-- <kbase id="kbase" xmlns="http://drools.org/schema/drools-spring"> <resources> 
+		<resource type="DRL" source="classpath:privilege-access.drl" /> <resource 
+		type="DRL" source="classpath:privilege-handle.drl" /> </resources> </kbase> -->
+	<bean id="memCachedPool" class="com.whalin.MemCached.SockIOPool"
+		factory-method="getInstance" init-method="initialize" destroy-method="shutDown">
+		<constructor-arg>
+			<value>memCachedPool</value>
+		</constructor-arg>
+		<property name="servers">
+			<list>
+				<value>${memcached.url}</value>
+			</list>
+		</property>
+		<property name="initConn">
+			<value>20</value>
+		</property>
+
+		<property name="minConn">
+			<value>10</value>
+		</property>
+
+		<property name="maxConn">
+			<value>50</value>
+		</property>
+
+		<property name="maintSleep">
+			<value>3000</value>
+		</property>
+
+		<property name="nagle">
+			<value>false</value>
+		</property>
+
+		<property name="socketTO">
+			<value>3000</value>
+		</property>
+	</bean>
+	<bean id="memCachedClient" class="com.whalin.MemCached.MemCachedClient">
+		<constructor-arg>
+			<value>memCachedPool</value>
+		</constructor-arg>
+	</bean>
+<!-- 	<bean id="redisCache" class="com.cdsf.shopConvert.RedisCache"> -->
+<!-- 		<property name="hostName" value="10.0.4.56"></property> -->
+<!-- 		<property name="port" value="6379"></property> -->
+<!-- 		<property name="password" value="1234"></property>  -->
+<!-- 	</bean> -->
+</beans>

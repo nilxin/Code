@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="worker.WayBillMapper">
+
+	<insert id="add" parameterType="worker.WorkWayBill">
+		INSERT INTO t_waybill (
+			id,
+			way_bill_no,
+			create_time,
+			current_status,
+			green_truck_plate,
+			audit_time,
+			audit_station,
+			current_auditor_id,
+			audit_conclusion_status,
+			current_mass,
+			audit_conclusion_flowId,
+			second_cargos,
+			vehicle_identification_no
+		)
+		VALUES(
+		#{id},
+		#{wayBillNo},
+		#{createTime},
+		#{currentStatus},
+		#{greenTruckPlate},
+		#{auditTime},
+		#{auditStation},
+		#{currentAuditorId},
+		#{auditConclusionStatus},
+		#{currentMass},
+		#{auditConclusionFlowId},
+		#{secondCargos},
+		#{vehicleIdentificationNo}
+		)
+	</insert>
+	
+	<update id="mod" parameterType="worker.WorkWayBill">
+		UPDATE t_waybill
+		SET
+		audit_time=#{auditTime},
+		current_status=#{currentStatus},
+		way_bill_no=#{wayBillNo},
+		current_auditor_id=#{currentAuditorId},
+		audit_station=#{auditStation},
+		audit_conclusion_status=#{auditConclusionStatus},
+		current_mass=#{currentMass},
+		audit_conclusion_flowId=#{auditConclusionFlowId},
+		<if test="@T@hasText(secondCargos)">
+			second_cargos=#{secondCargos},
+	    </if>
+		<if test="@T@hasText(vehicleIdentificationNo)">
+			vehicle_identification_no=#{vehicleIdentificationNo},
+	    </if>
+	    id=#{id}
+		WHERE id =#{id}
+	</update>
+	<!-- 修改稽查结论关联主键（audit_conclusion_flowId） -->
+	<update id="modPayMoney" parameterType="com.cdsf.greenpassdriver.domain.AuditConclusion">
+		UPDATE t_waybill
+		SET
+		current_status=#{currentStatus},
+		audit_conclusion_flowId=#{flowId}
+		WHERE id =#{waybillId}
+	</update>
+</mapper>

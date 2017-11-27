@@ -1,0 +1,905 @@
+<div id="hitAmount">
+	<h3>稽查效率</h3>
+	<!-- 打击金额统计条件 -->
+	<div class="checkTime clearfix">
+		<div class="checkIllegalTime_box fl">
+			<span>
+				<input type="number" placeholder="次数" name="startIllegalTimes" id="startIllegalTimes">
+			</span>
+			<span class="timeTo">至</span>
+			<span>
+				<input type="number" placeholder="次数" name="endIllegalTimes" id="endIllegalTimes">
+			</span>
+		</div>
+		<div id="searchConditonDivId">
+			<input type="text" class="searchCondition" placeholder="关键字:员工工号" name = "truckPlateSearch" id="searchConditionId"></input>
+		</div>
+		<div class="checkTime_btn fl">
+			<input id = "saveAuditorId" type="hidden" ></input>
+			<span class="statistics">统&nbsp;计</span>
+		</div>
+		<a class="backTo">返回</a>
+		<div class="pagingBox">
+			<div><a class="prevBtn">上一页</a>当前第<span class="nowPage">10</span>页\共<span class="totalPage">20</span>页<a class="nextBtn">下一页</a><input id = "firstPageRowsId" type="hidden" ></input></div>
+		</div>
+	</div>
+	<div class="page1"></div>
+	<div class="page2"></div>
+	<!-- 打击金额统计表格展示 -->
+	<!-- <div class="tableBox" data-page=1>
+		<div class="table_head clearfix">
+			<span class="w33">稽查工号</span>
+			<span class="w33">打逃金额</span>
+			<span class="w33">打逃次数</span>
+		</div>
+		<div id="table_body_box_hitAmount" class="table_body_box">
+			<ul class="table_body">
+			
+			</ul>
+		</div>
+	</div> -->
+	<!-- 员工工作统计 -->
+<!-- 	<div class="tableBox" data-page=2>
+		<div class="table_head clearfix">
+			<span class="w25">运单号</span>
+			<span class="w25">稽查时间</span>
+			<span class="w25">品类</span>
+			<span class="w25">稽查结论</span>
+		</div>
+		<div id="table_body_box_Employee" class="table_body_box">
+			<ul class="table_body">
+				<li class=" clearfix">
+					<span class="w25">201705059527</span>
+					<span class="w25">2017-05-05 09:24:58</span>
+					<span class="w25">鲜活蔬菜 鲜活水果</span>
+					<span class="w25">混装超过80%</span>
+				</li>
+				<li class=" clearfix">
+					<span class="w25">201705059529</span>
+					<span class="w25">2017-05-05 09:29:58</span>
+					<span class="w25">鲜活蔬菜 鲜活水果</span>
+					<span class="w25">混装超过60%</span>
+				</li>
+			</ul>
+		</div>
+	</div> -->
+</div>
+<div class="echartsContent">
+	<span class="hitAmountInfo">统计详情</span>
+	<div id="echartsTop10"></div>
+</div>
+<script rel="script">
+    define(function(require){
+    	// require("driverEvaluate/js/echarts.min.js");
+        var base = require("Base"),
+        	default_pageRows = 10,
+        	default_pageIndex = 1,
+        	_self; 
+        return base.extend({
+			onInit : function(options){
+				console.log("xxxx  onInit:  optionsxxxxxxx"+JSON.stringify(options));
+				_self = this;
+				this.inspectChart = echarts.init(document.getElementById('echartsTop10'));
+
+				_self.statisticsClick();//统计按钮  点击事件
+				_self.workStatistics();//下钻到员工工作统计
+				_self.backTostatistics();//返回 打击金额统计
+				_self.clickpagingBtn();//上一页 下一页
+				_self.buildDrawTop();
+				_self.drawTop();//echartsTop10 图表
+				_self.hitAmountInfo();//关闭图表 查看打击金额统计的表格
+				$('#table_body_box_hitAmount').mCustomScrollbar({//初始化表格滚动条
+					mouseWheelPixels:80,
+					scrollButtons:{
+						enable:false,
+						scrollType:"continuous",
+						scrollSpeed:20,
+						scrollAmount:40
+					},
+				 	horizontalScroll:false,
+				});
+			},
+			//统计按钮  点击事件
+			statisticsClick : function(){
+				var startIllegalTimes,endIllegalTimes,searchConditionKeyWords,startTime,endTime;
+				$("#container").off('click','#hitAmount .statistics').on('click','#hitAmount .statistics',function(){
+					pageNum = $(".tableBox").attr("data-page");
+					searchConditionKeyWords = $("#searchConditionId").val();
+					console.log("searchConditionKeyWords:"+searchConditionKeyWords);
+					// alert("pageNum:"+pageNum);
+					if(pageNum == 1){
+						startIllegalTimes = $("#startIllegalTimes").val();
+						endIllegalTimes = $("#endIllegalTimes").val();
+						$(".table_body").empty();
+						//清空后每次统计查询都是第一页了
+						var nowPageNum = 1;
+						$(".nowPage").html(nowPageNum);
+						if(S.isEmpty(startIllegalTimes)){
+							startIllegalTimes = null;
+						}
+						if(S.isEmpty(endIllegalTimes)){
+							endIllegalTimes = null;
+						}
+						if(S.isEmpty(searchConditionKeyWords)){
+							searchConditionKeyWords = null;
+						}
+						var default_pageIndex = 1,
+					    url = "/greenpassappweb/app/webstatistics/strikecash.json",
+					    pageId = 1;
+						_self.drawData(pageId,url,default_pageIndex,default_pageRows,null,startIllegalTimes,endIllegalTimes,searchConditionKeyWords);
+					}else if(pageNum == 2){
+						//员工工作统计的高级查询
+						startTime = $("#startTime").val();
+						endTime = $("#endTime").val();
+
+						$(".table_body").empty();
+						//清空后每次统计查询都是第一页了
+						var nowPageNum = 1;
+						$(".nowPage").html(nowPageNum);
+						if(S.isEmpty(startTime)){
+							startTime = null;
+						}
+						if(S.isEmpty(endTime)){
+							endTime = null;
+						}
+					    var	url = "/greenpassappweb/app/webstatistics/strikecashdetail.json",
+					    	pageId = 2;
+					    var auditorId = $("#saveAuditorId").attr("saveAuditorId");
+						_self.drawData(pageId,url,nowPageNum,default_pageRows,auditorId,null,null,null,startTime,endTime);
+
+					}
+
+
+					// if (!(startTime !== "" && endTime !== "" && auditorWorkNo !== "")) return;
+					// 	alert(startTime+"---"+endTime+"---"+auditorWorkNo+"---"+pageNum)
+				});
+			},
+			//下钻到员工工作统计
+			workStatistics : function(){
+				$("#container").off('click','.reviewData').on('click','.reviewData',function(e){
+					$(".backTo").show();
+					$("#hitAmount>h3").html("员工工作统计");
+					//$(".tableBox").html(_self.stitching()).attr("data-page",2); //员工详情 拼接字符串
+					var auditorId = $(e.target).attr("auditorid");
+					$("#saveAuditorId").attr("saveAuditorId",auditorId);
+					var nowPageNum = parseInt($(".nowPage").html(), 10);
+					$("#firstPageRowsId").attr("firstPageRows",nowPageNum);
+					//下钻进来默认展示第二个列表页面的第一页
+					$(".nowPage").html(default_pageIndex);
+					var url = "/greenpassappweb/app/webstatistics/strikecashdetail.json",
+					    pageId = 2;
+					_self.drawData(pageId,url,default_pageIndex,default_pageRows,auditorId);
+
+					//改变查询条件
+					var $checkTime_box = $(".checkIllegalTime_box.fl");
+					$checkTime_box.empty();
+					$checkTime_box.attr("class","checkTime_box fl");
+
+					/** 这里实现不了  货品品类和稽查结论的模糊查询,数据库存放的都是id,暂时屏蔽掉*/
+					// $("#searchConditionId").attr("placeholder","关键字:稽查结论,品类");
+					// $("#searchConditionId").attr("class","searchCondition_publishmoney2");
+					// $("#searchConditonDivId").attr("class","searchCondition_div2");
+					$("#searchConditonDivId").empty();
+
+
+					// $checkTime_box.css("fl");
+					// <div class="checkTime_box fl">
+					var $span1 = $("<span></span>");
+					var $input1 = $("<input type=\"text\" placeholder=\"开始时间\" name=\"startTime\" id=\"startTime\" class=\"Wdate startTime\" onFocus=\"WdatePicker({skin:\'whyGreen\',dateFmt:\'yyyy-MM-dd\',maxDate:\'#F{$dp.$D(\\\'endTime\\\')||\\\'%y-%M-{%d-1}\\\'}'})\">");
+					$span1.append($input1);
+					$span2 = $("<span class=\"timeTo\">至</span>");
+
+					var $span3 = $("<span></span>");
+					var $input2 = $("<input type=\"text\" placeholder=\"结束时间\" name=\"endTime\" id=\"endTime\" class=\"Wdate endTime\" onFocus=\"WdatePicker({skin:\'whyGreen\',dateFmt:\'yyyy-MM-dd\',minDate:\'#F{$dp.$D(\\\'startTime\\\')}\',maxDate:\'%y-%M\'})\">");
+					$span3.append($input2);
+					$checkTime_box.append($span1);
+					$checkTime_box.append($span2);
+					$checkTime_box.append($span3);
+
+
+
+
+					$('#table_body_box_Employee').mCustomScrollbar({//初始化表格滚动条
+						mouseWheelPixels:80,
+						scrollButtons:{
+							enable:false,
+							scrollType:"continuous",
+							scrollSpeed:20,
+							scrollAmount:40
+						},
+					 	horizontalScroll:false,
+					});
+				});
+			},
+			//员工工作统计 拼接字符串 
+			stitching : function(data){
+				var html = '',
+					htmlArr = [];
+				html += '<div class="table_head clearfix"><span class="w25">运单号</span><span class="w25">稽查时间</span><span class="w25">品类</span><span class="w25">稽查结论</span></div><div id="table_body_box_Employee" class="table_body_box"><ul class="table_body">';
+					for (var i = 0,len = 20; i < len; i++  ) {
+						htmlArr.push('<li class=" clearfix"><span class="w25">201705059527</span><span class="w25">2017-05-05 09:24:58</span><span class="w25">鲜活蔬菜 鲜活水果</span><span class="w25">混装超过80%</span></li>');
+					};
+				html += htmlArr.join('');	
+				html += '</ul></div>';
+				return html;
+			},
+			//打击金额统计 拼接字符串 
+			fightAgainst : function(data){
+				var html = '',
+					htmlArr = [];
+				html += '<div class="table_head clearfix"><span class="w33">稽查工号</span><span class="w33">打逃金额</span><span class="w33">打逃次数</span></div><div id="table_body_box_hitAmount" class="table_body_box"><ul class="table_body">';
+					for (var i = 0,len = 28; i < len; i++  ) {
+						htmlArr.push('<li class="reviewData clearfix"><span class="w33">9527</span><span class="w33">188</span><span class="w33">1280</span></li>');
+					};
+				html += htmlArr.join('');	
+				html += '</ul></div>';
+				return html;
+			},
+			test : function(){
+				alert(111111111111);
+			},
+			//返回 打击金额统计
+			backTostatistics : function(){
+				$("#container").off('click','.backTo').on('click','.backTo',function(){
+					$(this).hide();
+					$("#hitAmount>h3").html("打击金额统计");
+					//这里最好用样式的隐藏来进行控制,从哪儿进来就返回到哪儿而不是返回到第一页
+					//alert("xxxxxx"+$(".tableBox").attr("data-page"));
+					// if($(".tableBox").attr("data-page") == 2){
+					// 	$("div[data-page = '2']").css("display","none");
+					// 	$("div[data-page = '1']").css("display","block");
+					// }else{
+						
+					// }
+
+
+					
+					//$(".tableBox").html(_self.fightAgainst()).attr("data-page",1); //打击金额统计 拼接字符串 
+					var url = "/greenpassappweb/app/webstatistics/strikecash.json",
+					    pageId = 1;
+					var nowPageNum = $("#firstPageRowsId").attr("firstPageRows"); ;
+					$(".nowPage").html(nowPageNum);   
+					_self.drawData(pageId,url,nowPageNum,default_pageRows);
+
+					//更改高级查询的条件选择框,返回打逃金额统计
+					var $checkTime_box = $(".checkTime_box.fl");
+					$checkTime_box.empty();
+					$checkTime_box.attr("class","checkIllegalTime_box fl");
+					$("#searchConditonDivId").empty();
+					// <input type="text" class="searchCondition" placeholder="关键字:员工工号" name = "truckPlateSearch" id="searchConditionId"></input>
+					$searchInput = $("<input type=\"text\" class=\"searchCondition\" placeholder=\"关键字:员工工号\" name = \"truckPlateSearch\" id=\"searchConditionId\"></input>");
+					$("#searchConditonDivId").append($searchInput);
+					// $("#searchConditionId").attr("placeholder","关键字:员工工号");
+					// $("#searchConditionId").attr("class","searchCondition");
+
+					var $span1 = $("<span></span>");
+					var $input1 = $("<input type=\"number\" placeholder=\"次数\" name=\"startIllegalTimes\" id=\"startIllegalTimes\">");
+					$span1.append($input1);
+					$span2 = $("<span class=\"timeTo\">至</span>");
+
+					var $span3 = $("<span></span>");
+					var $input2 = $("<input type=\"number\" placeholder=\"次数\" name=\"endIllegalTimes\" id=\"endIllegalTimes\">");
+					$span3.append($input2);
+					$checkTime_box.append($span1);
+					$checkTime_box.append($span2);
+					$checkTime_box.append($span3);
+
+					$('#table_body_box_hitAmount').mCustomScrollbar({//初始化表格滚动条
+						mouseWheelPixels:80,
+						scrollButtons:{
+							enable:false,
+							scrollType:"continuous",
+							scrollSpeed:20,
+							scrollAmount:40
+						},
+					 	horizontalScroll:false,
+					});
+				});
+			},
+			//上一页 下一页
+			clickpagingBtn : function(){
+				$("#container").off('click','.prevBtn').on('click','.prevBtn',function(){
+					var nowPageNum = parseInt($(".nowPage").html(), 10);
+					if (nowPageNum <= 1){
+						$.zAlert("已经是第一页");
+						return;
+					}
+					$(".nowPage").html(--nowPageNum);
+					var pageNum = $(".tableBox").attr("data-page");
+					_self.trunPage(pageNum);
+					// if(pageNum == 1){
+					// 	//数据填充   清空DOM 重新绘制
+					// 	$(".table_body").empty();
+					// 	var searchConditionKeyWords = $("#searchConditionId").val();
+					// 	var startIllegalTimes = $("#startIllegalTimes").val();
+					// 	var endIllegalTimes = $("#endIllegalTimes").val();
+					// 	var nowPageNum = parseInt($(".nowPage").html(), 10);
+					// 	$(".nowPage").html(nowPageNum);
+					// 	if(S.isEmpty(startIllegalTimes)){
+					// 		startIllegalTimes = null;
+					// 	}
+					// 	if(S.isEmpty(endIllegalTimes)){
+					// 		endIllegalTimes = null;
+					// 	}
+					// 	if(S.isEmpty(searchConditionKeyWords)){
+					// 		searchConditionKeyWords = null;
+					// 	}
+					//     var default_pageRows = 4,
+					//     	url = "/greenpassappweb/app/webstatistics/strikecash.json",
+					//     	pageId = 1;
+					// 	_self.drawData(pageId,url,nowPageNum,default_pageRows,null,startIllegalTimes,endIllegalTimes,searchConditionKeyWords);
+					// }else{
+					// 	var startTime = $("#startTime").val();
+					// 	var endTime = $("#endTime").val();
+					// 	var nowPageNum = parseInt($(".nowPage").html(), 10);
+					// 	$(".nowPage").html(nowPageNum);
+					// 	$(".table_body").empty();
+					// 	if(S.isEmpty(startTime)){
+					// 		startTime = null;
+					// 	}
+					// 	if(S.isEmpty(endTime)){
+					// 		endTime = null;
+					// 	}
+					//     var default_pageRows = 4,
+					//    		url = "/greenpassappweb/app/webstatistics/strikecashdetail.json",
+					//     	pageId = 2;
+					//     var auditorId = $("#saveAuditorId").attr("saveAuditorId");
+					// 	_self.drawData(pageId,url,nowPageNum,default_pageRows,auditorId,null,null,null,startTime,endTime);
+					// }
+
+				});
+				$("#container").off('click','.nextBtn').on('click','.nextBtn',function(){
+					var nowPageNum = parseInt($(".nowPage").html(), 10);
+					var totalNum = parseInt($(".totalPage").html(), 10);
+					if (nowPageNum >= totalNum){
+						$.zAlert("已经是最后一页");
+						return;
+					}
+					$(".nowPage").html(++nowPageNum);
+					var pageNum = $(".tableBox").attr("data-page");
+					_self.trunPage(pageNum);
+
+				});
+			},
+
+			trunPage:function(pageNum){
+				if(pageNum == 1){
+						//数据填充   清空DOM 重新绘制
+						$(".table_body").empty();
+						var searchConditionKeyWords = $("#searchConditionId").val();
+						var startIllegalTimes = $("#startIllegalTimes").val();
+						var endIllegalTimes = $("#endIllegalTimes").val();
+						var nowPageNum = parseInt($(".nowPage").html(), 10);
+						$(".nowPage").html(nowPageNum);
+						if(S.isEmpty(startIllegalTimes)){
+							startIllegalTimes = null;
+						}
+						if(S.isEmpty(endIllegalTimes)){
+							endIllegalTimes = null;
+						}
+						if(S.isEmpty(searchConditionKeyWords)){
+							searchConditionKeyWords = null;
+						}
+				    	var url = "/greenpassappweb/app/webstatistics/strikecash.json",
+					    	pageId = 1;
+						_self.drawData(pageId,url,nowPageNum,default_pageRows,null,startIllegalTimes,endIllegalTimes,searchConditionKeyWords);
+					}else{
+						var startTime = $("#startTime").val();
+						var endTime = $("#endTime").val();
+						var nowPageNum = parseInt($(".nowPage").html(), 10);
+						$(".nowPage").html(nowPageNum);
+						$(".table_body").empty();
+						if(S.isEmpty(startTime)){
+							startTime = null;
+						}
+						if(S.isEmpty(endTime)){
+							endTime = null;
+						}
+					   	var	url = "/greenpassappweb/app/webstatistics/strikecashdetail.json",
+					    	pageId = 2;
+					    var auditorId = $("#saveAuditorId").attr("saveAuditorId");
+						_self.drawData(pageId,url,nowPageNum,default_pageRows,auditorId,null,null,null,startTime,endTime);
+					}
+			},
+
+			//echartsTop10 图表
+			drawTop : function(){
+				var self=this;
+				console.log("-in--drawTop:---");
+				// var inspectChart = echarts.init(document.getElementById('echartsTop10'));
+				
+				var requestOption = {};
+				requestOption.data = {
+						"page.index":1,
+						"page.rows":10
+					};
+				requestOption.url = "/greenpassappweb/app/webstatistics/strikecash.json";
+				// requestOption.success = function(data){
+				// 	//循环填充数据
+				// 	var _data = data.data;
+				// 	if(_data.status != 0){
+				// 		var dataContent = _data.content;
+				// 		var data_list = dataContent.list,
+				// 		    dataAxis = [],
+				// 		    data=[];
+				// 		for(var i=0,len=data_list.length;i<len;i++){
+				// 			dataAxis.push(data_list[i].auditorName);
+				// 			data.push(data_list[i].fightEscapCost);
+				// 		}
+				// 		console.log("---dataAxis-------"+JSON.stringify(dataAxis));
+				// 		console.log("----data------"+JSON.stringify(data));
+						//var dataAxis = ['张三', '李四', '王五', '赵六', '钱七', 'star', 'Sun','沈二','正大','桑桑'];
+						//var data = [10788, 6582, 2070, 1374, 1390, 1330, 1240, 3130, 410, 1011];
+						// var option = {
+						// 		title: {
+						// 	        text: '打击金额统计Top10',
+						// 	        textStyle: {  
+						// 				fontSize:'18',
+						//                 fontWeight: '800',              //标题颜色  
+						//             }, 
+						//             x:'center'
+						// 	    },
+						// 	    tooltip : {
+						// 	        trigger: 'axis',
+						// 	        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+						// 	            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+						// 	        }
+						// 	    },
+						// 	    legend: {
+						// 	        data:['打击金额统计Top10'],
+						// 	    },
+						// 	    toolbox : {
+						//     		show: true,
+						// 	        feature: {
+						// 	            magicType: {type: ['line', 'bar']},
+						// 	            restore: {},
+						// 	            saveAsImage: {}
+						// 	        },
+						// 	        iconStyle : {
+						// 	        	normal : {
+						// 	        		borderColor : '#03DA8E'
+						// 	        	}
+						// 	        }
+						//     	},
+						// 	    grid: {
+						// 	        left: '3%',
+						// 	        right: '4%',
+						// 	        bottom: '3%',
+						// 	        containLabel: true,
+						// 	    },
+						// 	    xAxis: {
+						// 	        type: 'category',
+						// 	        data: dataAxis,
+						// 	        axisTick: {
+						//                 alignWithLabel: true
+						//             },
+						//             axisLabel: {
+		    //                             show: true,
+		    //                             textStyle: {
+		    //                                 color: '#72ACD1'
+		    //                             },
+		    //                             interval:0,//横轴信息全部显示  
+		    //                      		rotate:-16,//-30度角倾斜显示  
+		    //                         },
+		    //                         axisLine:{
+						//                 lineStyle:{
+						//                     color:'#72ACD1',
+						//                     type : 'dotted'
+						//                     // width:8,//这里是为了突出显示加上的，可以去掉
+						//                 }
+						//             }
+						// 	    },
+						// 	    yAxis:  {
+						// 	        type: 'value',
+						// 	        axisLabel: {
+		    //                             show: true,
+		    //                             textStyle: {
+		    //                                 color: '#72ACD1'
+		    //                             }
+		    //                         },
+		    //                         axisLine:{
+						//                 lineStyle:{
+						//                     color:'transparent',
+						//                 }
+						//             }
+						// 	    },
+						// 	    series: [
+						// 	        {
+						// 	            name: '',
+						// 	            type: 'bar',
+						// 	            stack: '总量',
+						// 	            itemStyle: {
+					 //                    normal: {
+					 //                    	barBorderRadius: 10,
+					 //                        color: function(params) { // build a color map as your need.
+					 //                        		var colorList = [];
+					 //                        		colorList = [//好，这里就是重头戏了，定义一个list，然后根据所以取得不同的值，这样就实现了，
+						// 								'#0280F0','#038DE6','#0589FE','#2E8CDE','#2EAAE9','#4AADFF','#63B9FC','#81D5EE'
+					 //                           		];
+						//                             return colorList[params.dataIndex]
+					 //                       		}
+					 //                    	}
+					 //                	},
+						// 	            label: {
+						// 	                normal: {
+						// 	                    show: true,
+						// 	                    position: 'top',
+						// 						color:'#FFFFFF'
+						// 	                }
+						// 	            },
+						// 	            data: data
+						// 	        },
+						// 	    ]	    
+						// };
+
+
+						// inspectChart.setOption(option,true);
+
+					requestOption.success = function(data){
+					//循环填充数据
+					var _data = data.data;
+					if(_data.status != 0){
+						var dataContent = _data.content;
+						var data_list = dataContent.list,
+						    dataAxis = [],
+						    series=[];
+						    var  data1=[],data2=[],data3=[];
+						var pathSymbols = {
+
+						    car: 'path://M49.592,40.883c-0.053,0.354-0.139,0.697-0.268,0.963c-0.232,0.475-0.455,0.519-1.334,0.475 c-1.135-0.053-2.764,0-4.484,0.068c0,0.476,0.018,0.697,0.018,0.697c0.111,1.299,0.697,1.342,0.931,1.342h3.7 c0.326,0,0.628,0,0.861-0.154c0.301-0.196,0.43-0.772,0.543-1.78c0.017-0.146,0.025-0.336,0.033-0.56v-0.01 c0-0.068,0.008-0.154,0.008-0.25V41.58l0,0C49.6,41.348,49.6,41.09,49.592,40.883L49.592,40.883z M6.057,40.883 c0.053,0.354,0.137,0.697,0.268,0.963c0.23,0.475,0.455,0.519,1.334,0.475c1.137-0.053,2.762,0,4.484,0.068 c0,0.476-0.018,0.697-0.018,0.697c-0.111,1.299-0.697,1.342-0.93,1.342h-3.7c-0.328,0-0.602,0-0.861-0.154 c-0.309-0.18-0.43-0.772-0.541-1.78c-0.018-0.146-0.027-0.336-0.035-0.56v-0.01c0-0.068-0.008-0.154-0.008-0.25V41.58l0,0 C6.057,41.348,6.057,41.09,6.057,40.883L6.057,40.883z M49.867,32.766c0-2.642-0.344-5.224-0.482-5.507 c-0.104-0.207-0.766-0.749-2.271-1.773c-1.522-1.042-1.487-0.887-1.766-1.566c0.25-0.078,0.492-0.224,0.639-0.241 c0.326-0.034,0.345,0.274,1.023,0.274c0.68,0,2.152-0.18,2.453-0.48c0.301-0.303,0.396-0.405,0.396-0.672 c0-0.268-0.156-0.818-0.447-1.146c-0.293-0.327-1.541-0.49-2.273-0.585c-0.729-0.095-0.834,0-1.022,0.121 c-0.304,0.189-0.32,1.919-0.32,1.919l-0.713,0.018c-0.465-1.146-1.11-3.452-2.117-5.269c-1.103-1.979-2.256-2.599-2.737-2.754 c-0.474-0.146-0.904-0.249-4.131-0.576c-3.298-0.344-5.922-0.388-8.262-0.388c-2.342,0-4.967,0.052-8.264,0.388 c-3.229,0.336-3.66,0.43-4.133,0.576s-1.633,0.775-2.736,2.754c-1.006,1.816-1.652,4.123-2.117,5.269L9.87,23.109 c0,0-0.008-1.729-0.318-1.919c-0.189-0.121-0.293-0.225-1.023-0.121c-0.732,0.104-1.98,0.258-2.273,0.585 c-0.293,0.327-0.447,0.878-0.447,1.146c0,0.267,0.094,0.379,0.396,0.672c0.301,0.301,1.773,0.48,2.453,0.48 c0.68,0,0.697-0.309,1.023-0.274c0.146,0.018,0.396,0.163,0.637,0.241c-0.283,0.68-0.24,0.524-1.764,1.566 c-1.506,1.033-2.178,1.566-2.271,1.773c-0.139,0.283-0.482,2.865-0.482,5.508s0.189,5.02,0.189,5.86c0,0.354,0,0.976,0.076,1.565 c0.053,0.354,0.129,0.697,0.268,0.966c0.232,0.473,0.447,0.516,1.334,0.473c1.137-0.051,2.779,0,4.477,0.07 c1.135,0.043,2.297,0.086,3.33,0.11c2.582,0.051,1.826-0.379,2.928-0.36c1.102,0.016,5.447,0.196,9.424,0.196 c3.976,0,8.332-0.182,9.423-0.196c1.102-0.019,0.346,0.411,2.926,0.36c1.033-0.018,2.195-0.067,3.332-0.11 c1.695-0.062,3.348-0.121,4.477-0.07c0.886,0.043,1.103,0,1.332-0.473c0.132-0.269,0.218-0.611,0.269-0.966 c0.086-0.592,0.078-1.213,0.078-1.565C49.678,37.793,49.867,35.408,49.867,32.766L49.867,32.766z M13.219,19.735 c0.412-0.964,1.652-2.9,2.256-3.244c0.145-0.087,1.426-0.491,4.637-0.706c2.953-0.198,6.217-0.276,7.73-0.276 c1.513,0,4.777,0.078,7.729,0.276c3.201,0.215,4.502,0.611,4.639,0.706c0.775,0.533,1.842,2.28,2.256,3.244 c0.412,0.965,0.965,2.858,0.861,3.116c-0.104,0.258,0.104,0.388-1.291,0.275c-1.387-0.103-10.088-0.216-14.185-0.216 c-4.088,0-12.789,0.113-14.184,0.216c-1.395,0.104-1.188-0.018-1.291-0.275C12.254,22.593,12.805,20.708,13.219,19.735 L13.219,19.735z M16.385,30.511c-0.619,0.155-0.988,0.491-1.764,0.482c-0.775,0-2.867-0.353-3.314-0.371 c-0.447-0.017-0.842,0.302-1.076,0.362c-0.23,0.06-0.688-0.104-1.377-0.318c-0.688-0.216-1.092-0.155-1.316-1.094 c-0.232-0.93,0-2.264,0-2.264c1.488-0.068,2.928,0.069,5.621,0.826c2.693,0.758,4.191,2.213,4.191,2.213 S17.004,30.357,16.385,30.511L16.385,30.511z M36.629,37.293c-1.23,0.164-6.386,0.207-8.794,0.207c-2.412,0-7.566-0.051-8.799-0.207 c-1.256-0.164-2.891-1.67-1.764-2.865c1.523-1.627,1.24-1.576,4.701-2.023C24.967,32.018,27.239,32,27.834,32 c0.584,0,2.865,0.025,5.859,0.404c3.461,0.447,3.178,0.396,4.699,2.022C39.521,35.623,37.887,37.129,36.629,37.293L36.629,37.293z  M48.129,29.582c-0.232,0.93-0.629,0.878-1.318,1.093c-0.688,0.216-1.145,0.371-1.377,0.319c-0.231-0.053-0.627-0.371-1.074-0.361 c-0.448,0.018-2.539,0.37-3.313,0.37c-0.772,0-1.146-0.328-1.764-0.481c-0.621-0.154-0.966-0.154-0.966-0.154 s1.49-1.464,4.191-2.213c2.693-0.758,4.131-0.895,5.621-0.826C48.129,27.309,48.361,28.643,48.129,29.582L48.129,29.582z',
+						     money: 'path://M512 0C229.068208 0 0 229.068208 0 512S229.068208 1024 512 1024 1024 794.931792 1024 512 794.931792 0 512 0zM678.917919 487.139884 678.917919 544.554913 547.514451 544.554913l0 79.907514 131.403468 0 0 57.415029L547.514451 681.877457l0 114.830058L476.485549 796.707514l0-114.830058L340.938728 681.877457l0-57.415029 134.954913 0L475.893642 544.554913 340.938728 544.554913l0-57.415029 113.646243 0L315.486705 227.292486l81.683237 0 97.072832 202.43237c5.327168 11.246243 11.246243 25.452023 18.349133 43.209249L514.959538 472.934104c4.73526-14.20578 11.246243-29.003468 18.94104-44.984971l97.66474-200.656647 76.947977 0L567.047399 487.139884 678.917919 487.139884z'
+						};
+
+						for(var i=0,len=data_list.length;i<len;i++){
+							dataAxis.push(data_list[i].auditWorkNo+data_list[i].auditorName);
+							data1.push({
+								value : data_list[i].fightEscapCost,
+								symbol: pathSymbols.money
+							});
+							data2.push({
+								value : data_list[i].fightEscapeTimes,
+								symbol: pathSymbols.car
+							});
+							data3.push(data_list[i].fightEscapCost/data_list[i].fightEscapeTimes);
+						}
+
+						series.push({
+							data:data1
+						},{
+							data:data2
+						},{
+							data:data3
+						},{
+							data:data3
+						});
+
+						// console.log(series[0].data,series[1].data);
+						
+						self.inspectChart.setOption({
+							xAxis:{
+								data: dataAxis
+							},
+							series:series
+						})
+					}else{
+						alert();
+					}
+				}
+				requestOption.error = function(e){
+					alert(JOSN.stringify(e));
+				}
+				S.request(requestOption);
+			},
+			
+			drawData : function(pageId,url,default_pageIndex,default_pageRows,auditorId,startIllegalTimes,endIllegalTimes,auditWorkNo,startTime,endTime,searchKeyWords){
+				var requestOption = {};
+				requestOption.data = {
+						"page.index":default_pageIndex,
+						"page.rows":default_pageRows,
+						"auditorId":auditorId,
+						"startIllegalTimes":startIllegalTimes,
+						"endIllegalTimes":endIllegalTimes,
+						"auditWorkNo":auditWorkNo,
+						"startTime":startTime,
+						"endTime":endTime
+					};
+				requestOption.url = url;
+				requestOption.success = function(data){
+					//循环填充数据
+					var _data = data.data;
+					if(_data.status != 0){
+						var $ul = $(".table_body");
+						var dataContent = _data.content;
+						totalRows = dataContent.total;
+						if(Math.ceil(totalRows/default_pageRows) <= 0){
+							totalPage = 1;
+						}else{
+							totalPage = Math.ceil(totalRows/default_pageRows);
+						}
+						console.log(totalPage);
+						$(".totalPage").html(totalPage);
+						var data_list = dataContent.list;
+
+						if(pageId == 1){
+							//打逃金额详情统计
+
+							// var $node_table = $(".tableBox").attr("data-page",1);
+							// debugger;
+							$(".page1").empty();
+							$(".page2").empty();
+							var $node_table = $('<div class="tableBox" data-page=1></div>');
+							$node_table.empty();
+							var $div_table = $("<div  class='table_head clearfix'></div>");
+							var $div_table_span_adn = $('<span class="w33">稽查工号</span>');
+							var $div_table_span_fec = $('<span class="w33">打逃金额</span>');
+							var $div_table_span_fet = $('<span class="w33">打逃次数</span>');
+							$div_table.append($div_table_span_adn);
+							$div_table.append($div_table_span_fec);
+							$div_table.append($div_table_span_fet);
+							$node_table.append($div_table);
+
+							var $div_table_box = $('<div id="table_body_box_hitAmount" class="table_body_box"></div>');
+							var $div_table_box_ul = $('<ul class="table_body"></ul>');
+
+							// var node = $("<li class='reviewData clearfix'></li>");
+							// var cloneNode;
+							for(var i=0,len=data_list.length;i<len;i++){
+								var node = $("<li class='reviewData clearfix'></li>");
+								var $currentAuditorNo = $("<span class='w33' auditorid="+data_list[i].auditorId+">"+data_list[i].auditWorkNo+"</span>");
+								var $fightEscapCost = $("<span class='w33' auditorid="+data_list[i].auditorId+">"+data_list[i].fightEscapCost+"</span>");
+								var $fightEscapeTimes = $("<span class='w33' auditorid="+data_list[i].auditorId+">"+data_list[i].fightEscapeTimes+"</span>");
+								node.append($currentAuditorNo);
+								node.append($fightEscapCost);
+								node.append($fightEscapeTimes);
+								// cloneNode = node.clone(true);
+								$div_table_box_ul.append(node);
+							}
+							// $div_table_box_ul.append(cloneNode);
+							$div_table_box.append($div_table_box_ul);
+							$node_table.append($div_table_box);
+							$(".page1").append($node_table);
+						}else if(pageId == 2){
+							//员工工作统计
+							//$("div[data-page = '1']").css("display","none");
+
+							//var $node_table = $(".tableBox").attr("data-page",2);
+							$(".page1").empty();
+							$(".page2").empty();
+							var $node_table = $('<div class="tableBox" data-page=2></div>');
+							$node_table.empty();
+							var $div_table = $("<div  class='table_head clearfix'></div>");
+							var $div_table_span_wbn = $('<span class="w25">运单号</span>');
+							var $div_table_span_wbt = $('<span class="w25">稽查时间</span>');
+							var $div_table_span_wbc = $('<span class="w25">品类</span>');
+							var $div_table_span_wba = $('<span class="w25">稽查结论</span>');
+							$div_table.append($div_table_span_wbn);
+							$div_table.append($div_table_span_wbt);
+							$div_table.append($div_table_span_wbc);
+							$div_table.append($div_table_span_wba);
+							$node_table.append($div_table);
+
+
+							var $div_table_box = $('<div id="table_body_box_Employee" class="table_body_box"></div>');
+							var $div_table_box_ul = $('<ul class="table_body"></ul>');
+
+							// var node = $("<li class='clearfix'></li>");
+							// var cloneNode;
+							for(var i=0,len=data_list.length;i<len;i++){
+								var node = $("<li class='clearfix'></li>");
+								var $wayBillNo = $("<span class='w25'>"+data_list[i].wayBillNo+"</span>");
+								var $auditTimestr = $("<span class='w25'>"+data_list[i].auditTimestr+"</span>");
+
+								var displayCargosName = "";
+								if(data_list[i].displayCargosName.length>0 && data_list[i].displayCargosName.length < 15){
+									displayCargosName = data_list[i].displayCargosName
+								}else if(data_list[i].displayCargosName.length>0 && data_list[i].displayCargosName.length > 14){
+									displayCargosName = data_list[i].displayCargosName.substring(0,15) + "...";
+								}else{
+									displayCargosName = "鲜货";
+								}
+								var $cargos = $("<span class='w25'>"+displayCargosName+"</span>");
+
+								if(data_list[i].conclusionContentStr){
+									var conclusionContentStr = "";
+									if(data_list[i].conclusionContentStr.length>0 && data_list[i].conclusionContentStr.length < 15){
+										conclusionContentStr = data_list[i].conclusionContentStr
+									}else if(data_list[i].conclusionContentStr.length>0 && data_list[i].conclusionContentStr.length > 14){
+										conclusionContentStr = data_list[i].conclusionContentStr.substring(0,15) + "...";
+									}else{
+										conclusionContentStr = "N/A";
+									}
+									var $conclusionContentStr = $("<span class='w25'>"+conclusionContentStr+"</span>");
+								}else{
+									var $conclusionContentStr = $("<span class='w25'>N/A</span>");
+								}
+								
+								node.append($wayBillNo);
+								node.append($auditTimestr);
+								node.append($cargos);
+								node.append($conclusionContentStr);
+								// cloneNode = node.clone(true);
+								$div_table_box_ul.append(node);
+							}
+							// $div_table_box_ul.append(cloneNode);
+							$div_table_box.append($div_table_box_ul);
+							$node_table.append($div_table_box);
+							$(".page2").append($node_table);
+						}
+					}else{
+						alert();
+					}
+				}
+				requestOption.error = function(e){
+					console.log("后台数据接口出错!");
+				}
+				S.request(requestOption);
+			},
+			
+			
+			//关闭图表 查看打击金额统计的表格
+			hitAmountInfo : function(){
+				$(".hitAmountInfo").off('click').on('click',function(){
+					$("#echartsTop10").html("").parent().hide(600);
+					$(".nowPage").html(1);
+					$(".totalPage").html(1);
+					var url = "/greenpassappweb/app/webstatistics/strikecash.json",
+					    pageId = 1;
+					_self.drawData(pageId,url,default_pageIndex,default_pageRows);
+				});
+			},
+			buildDrawTop: function(){
+				var self=this;
+				var pathSymbols = {
+				    car: 'path://M49.592,40.883c-0.053,0.354-0.139,0.697-0.268,0.963c-0.232,0.475-0.455,0.519-1.334,0.475 c-1.135-0.053-2.764,0-4.484,0.068c0,0.476,0.018,0.697,0.018,0.697c0.111,1.299,0.697,1.342,0.931,1.342h3.7 c0.326,0,0.628,0,0.861-0.154c0.301-0.196,0.43-0.772,0.543-1.78c0.017-0.146,0.025-0.336,0.033-0.56v-0.01 c0-0.068,0.008-0.154,0.008-0.25V41.58l0,0C49.6,41.348,49.6,41.09,49.592,40.883L49.592,40.883z M6.057,40.883 c0.053,0.354,0.137,0.697,0.268,0.963c0.23,0.475,0.455,0.519,1.334,0.475c1.137-0.053,2.762,0,4.484,0.068 c0,0.476-0.018,0.697-0.018,0.697c-0.111,1.299-0.697,1.342-0.93,1.342h-3.7c-0.328,0-0.602,0-0.861-0.154 c-0.309-0.18-0.43-0.772-0.541-1.78c-0.018-0.146-0.027-0.336-0.035-0.56v-0.01c0-0.068-0.008-0.154-0.008-0.25V41.58l0,0 C6.057,41.348,6.057,41.09,6.057,40.883L6.057,40.883z M49.867,32.766c0-2.642-0.344-5.224-0.482-5.507 c-0.104-0.207-0.766-0.749-2.271-1.773c-1.522-1.042-1.487-0.887-1.766-1.566c0.25-0.078,0.492-0.224,0.639-0.241 c0.326-0.034,0.345,0.274,1.023,0.274c0.68,0,2.152-0.18,2.453-0.48c0.301-0.303,0.396-0.405,0.396-0.672 c0-0.268-0.156-0.818-0.447-1.146c-0.293-0.327-1.541-0.49-2.273-0.585c-0.729-0.095-0.834,0-1.022,0.121 c-0.304,0.189-0.32,1.919-0.32,1.919l-0.713,0.018c-0.465-1.146-1.11-3.452-2.117-5.269c-1.103-1.979-2.256-2.599-2.737-2.754 c-0.474-0.146-0.904-0.249-4.131-0.576c-3.298-0.344-5.922-0.388-8.262-0.388c-2.342,0-4.967,0.052-8.264,0.388 c-3.229,0.336-3.66,0.43-4.133,0.576s-1.633,0.775-2.736,2.754c-1.006,1.816-1.652,4.123-2.117,5.269L9.87,23.109 c0,0-0.008-1.729-0.318-1.919c-0.189-0.121-0.293-0.225-1.023-0.121c-0.732,0.104-1.98,0.258-2.273,0.585 c-0.293,0.327-0.447,0.878-0.447,1.146c0,0.267,0.094,0.379,0.396,0.672c0.301,0.301,1.773,0.48,2.453,0.48 c0.68,0,0.697-0.309,1.023-0.274c0.146,0.018,0.396,0.163,0.637,0.241c-0.283,0.68-0.24,0.524-1.764,1.566 c-1.506,1.033-2.178,1.566-2.271,1.773c-0.139,0.283-0.482,2.865-0.482,5.508s0.189,5.02,0.189,5.86c0,0.354,0,0.976,0.076,1.565 c0.053,0.354,0.129,0.697,0.268,0.966c0.232,0.473,0.447,0.516,1.334,0.473c1.137-0.051,2.779,0,4.477,0.07 c1.135,0.043,2.297,0.086,3.33,0.11c2.582,0.051,1.826-0.379,2.928-0.36c1.102,0.016,5.447,0.196,9.424,0.196 c3.976,0,8.332-0.182,9.423-0.196c1.102-0.019,0.346,0.411,2.926,0.36c1.033-0.018,2.195-0.067,3.332-0.11 c1.695-0.062,3.348-0.121,4.477-0.07c0.886,0.043,1.103,0,1.332-0.473c0.132-0.269,0.218-0.611,0.269-0.966 c0.086-0.592,0.078-1.213,0.078-1.565C49.678,37.793,49.867,35.408,49.867,32.766L49.867,32.766z M13.219,19.735 c0.412-0.964,1.652-2.9,2.256-3.244c0.145-0.087,1.426-0.491,4.637-0.706c2.953-0.198,6.217-0.276,7.73-0.276 c1.513,0,4.777,0.078,7.729,0.276c3.201,0.215,4.502,0.611,4.639,0.706c0.775,0.533,1.842,2.28,2.256,3.244 c0.412,0.965,0.965,2.858,0.861,3.116c-0.104,0.258,0.104,0.388-1.291,0.275c-1.387-0.103-10.088-0.216-14.185-0.216 c-4.088,0-12.789,0.113-14.184,0.216c-1.395,0.104-1.188-0.018-1.291-0.275C12.254,22.593,12.805,20.708,13.219,19.735 L13.219,19.735z M16.385,30.511c-0.619,0.155-0.988,0.491-1.764,0.482c-0.775,0-2.867-0.353-3.314-0.371 c-0.447-0.017-0.842,0.302-1.076,0.362c-0.23,0.06-0.688-0.104-1.377-0.318c-0.688-0.216-1.092-0.155-1.316-1.094 c-0.232-0.93,0-2.264,0-2.264c1.488-0.068,2.928,0.069,5.621,0.826c2.693,0.758,4.191,2.213,4.191,2.213 S17.004,30.357,16.385,30.511L16.385,30.511z M36.629,37.293c-1.23,0.164-6.386,0.207-8.794,0.207c-2.412,0-7.566-0.051-8.799-0.207 c-1.256-0.164-2.891-1.67-1.764-2.865c1.523-1.627,1.24-1.576,4.701-2.023C24.967,32.018,27.239,32,27.834,32 c0.584,0,2.865,0.025,5.859,0.404c3.461,0.447,3.178,0.396,4.699,2.022C39.521,35.623,37.887,37.129,36.629,37.293L36.629,37.293z  M48.129,29.582c-0.232,0.93-0.629,0.878-1.318,1.093c-0.688,0.216-1.145,0.371-1.377,0.319c-0.231-0.053-0.627-0.371-1.074-0.361 c-0.448,0.018-2.539,0.37-3.313,0.37c-0.772,0-1.146-0.328-1.764-0.481c-0.621-0.154-0.966-0.154-0.966-0.154 s1.49-1.464,4.191-2.213c2.693-0.758,4.131-0.895,5.621-0.826C48.129,27.309,48.361,28.643,48.129,29.582L48.129,29.582z',
+				     money: 'path://M512 0C229.068208 0 0 229.068208 0 512S229.068208 1024 512 1024 1024 794.931792 1024 512 794.931792 0 512 0zM678.917919 487.139884 678.917919 544.554913 547.514451 544.554913l0 79.907514 131.403468 0 0 57.415029L547.514451 681.877457l0 114.830058L476.485549 796.707514l0-114.830058L340.938728 681.877457l0-57.415029 134.954913 0L475.893642 544.554913 340.938728 544.554913l0-57.415029 113.646243 0L315.486705 227.292486l81.683237 0 97.072832 202.43237c5.327168 11.246243 11.246243 25.452023 18.349133 43.209249L514.959538 472.934104c4.73526-14.20578 11.246243-29.003468 18.94104-44.984971l97.66474-200.656647 76.947977 0L567.047399 487.139884 678.917919 487.139884z'
+				};
+
+				var labelSetting = {
+				    normal: {
+				        show: true,
+				        position: 'outside',
+				        offset: [2, -2],
+				        textStyle: {
+				            fontSize: 16
+				        }
+				    }
+				};
+
+				var option = {
+					title: {
+		        	text: '稽查效率'
+				    },
+				    legend: {
+				        data: ['打逃金额','打逃次数','稽查效率','稽查效率',]
+				    },
+				    tooltip: {
+				        trigger: 'axis',
+				        axisPointer: {
+				            type: 'cross',
+				            crossStyle: {
+				                color: '#999'
+				            }
+				        }
+				    },
+				    toolbox: {
+				        feature: {
+				            dataView: {show: true, readOnly: false},
+				            magicType: {show: true, type: ['line', 'bar']},
+				            restore: {show: true},
+				            saveAsImage: {show: true}
+				        }
+				    },
+				    xAxis: [
+				        {
+				            type: 'category',
+				            data: ['230180049张三','230180049张三','230180049张三','230180049张三','230180049张三'],
+				            axisPointer: {
+				                type: 'shadow'
+				            },
+				            axisLabel: {  
+		                           interval: 0,  
+		                           // formatter:function(value)  
+		                           // {  
+		                           //     return value.split("").join("\n");  
+		                           // }  
+		                       		rotate: "-30"
+		            		},
+				        }
+				    ],
+				    yAxis: [
+				        {
+				            type: 'value',
+				            name: '元',
+				            min: 0,
+				            max: 2000,
+				            interval: 100,
+				            axisLabel: {
+				                formatter: '{value} 元'
+				            }
+				        },
+				        {
+				            type: 'value',
+				            name: '次数',
+				            min: 0,
+				            max: 25,
+				            interval: 5,
+				            axisLabel: {
+				                formatter: '{value} 次'
+				            }
+				        }
+				    ],  
+				    series: [
+				        {
+					        name: '打逃金额',
+					        type: 'pictorialBar',
+					        label: labelSetting,
+					        symbolRepeat: true,
+					        symbolSize: ['80%', '60%'],
+					        barCategoryGap: '40%',
+					      
+					        data: [],
+					        itemStyle:{
+				                normal:{
+				                    color: "#c23531"
+				                }
+				            },
+				            zlevel:1
+					    },
+					    {
+					        name: '打逃次数',
+					        type: 'pictorialBar',
+					        label: labelSetting,
+					        barGap: '10%',
+					        symbolRepeat: true,
+					        symbolSize: ['80%', '60%'],
+					        barCategoryGap: '40%',
+					        yAxisIndex: 1,
+
+					        data: [],			
+					        itemStyle:{
+				                normal:{
+				                    color: "#91c7ae"
+				                }
+				            },
+				            zlevel:1
+					    },{
+				            name:'稽查效率',
+				            type:'bar',
+				            data:[],
+				            itemStyle:{
+				                normal:{
+				                    color: "#2f4554"
+				                }
+				            },
+				            zlevel:0
+				        },
+				        {
+				            name:'稽查效率',
+				            type:'line',		 
+				            data:[],
+				            itemStyle:{
+				                normal:{
+				                    color: "#61a0a8"
+				                }
+				            },		   
+			            	symbol:"circle",
+			            	symbolSize:10,
+				            zlevel:0
+
+				        }
+
+				    ]
+				};
+				
+				
+				self.inspectChart.setOption(option);
+
+
+
+
+
+			}
+
+		})
+	})
+</script>

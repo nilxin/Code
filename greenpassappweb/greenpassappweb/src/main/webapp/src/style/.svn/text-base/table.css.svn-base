@@ -1,0 +1,263 @@
+#InspectionReview,#blacklist,#hitAmount,#violation,#InspectionPeriod,#echartsBox,#siteTraffic,#freshCategory{
+	width:100%;
+	height:100%;
+}
+/* **********************************************公共筛选样式**************************************************** */
+#content h3{
+	font-weight: normal;
+    font-size: 20px;
+    text-align: center;
+    line-height: 60px;
+    font-weight: bold;
+}
+#content .checkTime{
+	width:100%;
+	height:100px;
+	position: relative;
+	box-shadow: 0 0px 10px 1px #ccc;
+	margin-bottom: 15px;
+    padding: 10px 15px;
+}
+#content .checkTime .checkTime_box{
+	width:370px;
+	height:100%;
+}
+
+#content .checkTime .checkIllegalTime_box{
+    /*position: absolute;*/
+    /*left: 50px;*/
+    height: 100%;
+	width: 400px;
+}
+
+#content .checkIllegalTime_box span input{
+	width:49px;
+	padding: 20px 0 20px 10px;
+	outline: none;
+	border:0 none;
+	background: url(../images/databj.png) no-repeat center center;
+}
+
+.searchCondition{
+	position: absolute;
+    left: 150px;
+    height: 38px;
+    width: 200px;
+    top: 18px;
+    font-size: 16px;
+}
+
+
+.searchCondition_publishmoney2{
+    height: 38px;
+    width: 200px;
+    margin-top: -6px;
+    font-size: 16px;
+}
+
+
+.searchCondition_div2{
+    float : left;
+    margin-top: 10px;
+}
+
+#content .checkTime .checkTime_btn{
+	width: 250px;
+    /* height: 100%; */
+    padding: 5px 0 0 20px;
+    line-height: 35px;
+}
+#content .checkTime .checkTime_radio{
+	width: 300px;
+    /*height: 100%;*/
+}
+#content .checkTime_box span{
+	display: inline-block;
+    width: 152px;
+    overflow: hidden;
+}
+#content .checkTime_radio label{
+	font-size: 16px;
+	padding-top: 10px;
+	/*font-weight: inherit;*/
+}
+#content .checkTime_radio input{
+	margin-right: 10px;
+}
+#content .checkTime_box span input{
+	width:150px;
+	padding: 15px 0 15px 10px;
+	outline: none;
+	/*border-radius: 10px;*/
+	/*background: url(../images/databj.png) no-repeat center center;*/
+	background-color: #d2d2d2;
+}
+#content .checkTime_box .timeTo{
+	width:30px;
+	font-size:16px;
+	padding: 12px 5px;
+}
+#content .checkTime_btn .siteBox{
+	display: inline-block;
+	background: #FFFFFF;
+}
+#content .checkTime_btn .statistics{
+	outline: none;
+	border:0 none;
+	background: transparent;
+	padding: 10px;
+	font-size:16px;
+}
+#site{
+	width: 75px;
+	height: 30px;
+    line-height: 30px;
+    border-radius: 5px;
+}
+#site option{
+	border: 0 none;
+}
+
+#auditStationId option{
+	border: 1 none;
+}
+#auditStationId{
+	width: 75px;
+	height: 30px;
+	line-height: 30px;
+	border-radius: 5px;
+}
+#content .checkTime_btn .statistics{
+	padding: 5px 35px;
+	background: #1c92ff;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	-o-border-radius:10px;
+	-ms-border-radius: 10px;
+	border-radius: 10px;
+	margin-left: 20px;
+	color:#FFFFFF;
+	cursor:pointer;
+	box-shadow: 0 0px 10px 1px #ccc;
+}
+#content .checkTime_btn .statistics:hover{
+	background: #006ab9;
+}
+#content .checkTime_btn .statistics:active{
+	background: #1EC5FE;
+}
+#content .checkTime .backTo{
+    position: absolute;
+    bottom: 59px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
+    /*background: url(../images/qiubj.png) no-repeat center center;*/
+    background-size: 100% 100%;
+    font-size: 16px;
+    text-align: center;
+    line-height: 40px;
+    cursor: pointer;
+    /*transition: all 0.4s ease-in-out;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    -o-transition: all 0.4s ease-in-out;*/
+    display:none;
+}
+#content .checkTime .backTo:hover{
+	transform: rotate(360deg) scale(1.2);
+    -webkit-transform: rotate(360deg) scale(1.2);
+    -moz-transform: rotate(360deg) scale(1.2);
+    -o-transform: rotate(360deg) scale(1.2);
+    -ms-transform: rotate(360deg) scale(1.2);
+}
+.checkTime .pagingBox{
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    width: 300px;
+    height: 50px;
+    line-height: 50px;
+}
+.checkTime .pagingBox a{
+	padding: 5px 10px;
+	color:#FFFFFF;
+	background: #1c92ff;
+	font-size: 16px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	-o-border-radius:5px;
+	-ms-border-radius: 5px;
+	border-radius: 5px;
+	cursor: pointer;
+	margin: 0 5px;
+	box-shadow: 0 0px 10px 1px #ccc;
+}
+.checkTime .pagingBox a:hover{
+	background: #006ab9;
+}
+.checkTime .pagingBox a:active{
+	background: #0286D5;
+}
+.checkTime .pagingBox span{
+	margin: 0 10px;
+}
+/* **********************************************公共表格样式**************************************************** */
+
+#content .tableBox{
+	width:100%;
+	/*height: -moz-calc(100% - 160px);
+    height: -webkit-calc(100% - 160px);
+    height: calc(100% - 160px);*/
+    border: 1px solid #eeeff3;
+    text-align: center;
+}
+#content .tableBox .table_head{
+	height:40px;
+	line-height: 40px;
+	font-size:16px;
+	background: #ebebeb;
+    color: #3a3a3a;
+}
+#content .tableBox span:not(:last-child){
+	float: left;
+	border-right: 1px solid #eeeff3;
+}
+#content .table_head span:not(:last-child){
+	border-right:1.5px solid #dcdde0;
+}
+.table_body_box{
+	width:100%;
+	height: -moz-calc(100% - 40px);
+    height: -webkit-calc(100% - 40px);
+    height: calc(100% - 40px);
+    /*overflow:hidden;*/
+}
+.table_body_box .table_body li{
+	line-height: 40px;
+	height: 40px;
+}
+.table_body_box .table_body li:nth-child(odd){
+	background-color: #f6f6f6;
+}
+.table_body_box .table_body li:hover{
+	background: #BBC2C3;
+	/*background:-moz-linear-gradient(top, #ffffff, rgba(0, 0, 55, 0.5));  
+    background:-webkit-gradient(linear, 0 0, 0 bottom, from(#ffffff), to(rgba(0, 0, 55, 0.5)));
+    background:-o-linear-gradient(top, #ffffff, rgba(0, 0, 55, 0.5)); */
+}
+.table_body_box .table_body span{
+	height:40px;
+	font-size: 16px;
+	cursor: pointer;
+} 
+
+
+/************************************ SF2263 ****************************************/
+/*选择框样式调整*/
+#auditStation{
+	width: 75px;
+	height: 30px;
+	line-height: 30px;
+	border-radius: 5px;
+}

@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cdsf.greenpassdriver.mapper.GreenPassDriverMapper">
+		
+	<insert id="addGreenPassTruck"
+		parameterType="com.cdsf.greenpassdriver.domain.Truck">
+		INSERT INTO t_truck(
+			flow_id,
+			truck_plate,
+			truck_type,
+			color,
+			vehicle_identification_no
+			)
+			VALUES(
+			#{flowId,jdbcType=INTEGER},
+			#{truckPlate,jdbcType=VARCHAR},
+			#{truckType,jdbcType=VARCHAR},
+			#{color,jdbcType=VARCHAR},
+			#{vehicleIdentificationNo,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	
+	
+	<insert id="addTruckDriver"
+		parameterType="com.cdsf.greenpassdriver.domain.TruckDriver">
+		INSERT INTO t_truck_driver(
+			flow_id,
+			driver_name,
+			phone_num,
+			gender,
+			age,
+			native_place
+			)
+			VALUES(
+			#{flowId,jdbcType=INTEGER},
+			#{driverName,jdbcType=VARCHAR},
+			#{phoneNum,jdbcType=VARCHAR},
+			#{gender,jdbcType=INTEGER},
+			#{age,jdbcType=INTEGER},
+			#{nativePlace,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	
+	
+	<!-- 根据当前注册的名称查询注册司机的信息User  -->
+	<select id="getUserByRegNo" resultType="com.cdsf.app.user.domain.User">
+		SELECT 
+			* 
+		FROM 
+			t_user 
+		WHERE 
+			login_name=#{regNo} 
+		OR
+			phone_num=#{regNo} 
+		OR 
+		    user_name=#{regNo} 
+	</select>
+	
+	
+	
+	<!-- 根据userId  查询 User  -->
+	<select id="getUserByUserId" parameterType="String" resultType="com.cdsf.app.user.domain.User">
+		SELECT 
+			* 
+		FROM 
+			t_user 
+		WHERE 
+		   id = #{userId}
+	</select>
+	
+	
+	<!--  生成运单 -->
+	<insert id="addWayBillByTruckDriver"
+		parameterType="com.cdsf.greenpassdriver.domain.WayBill">
+			INSERT INTO t_waybill(
+				id,
+				way_bill_name,
+				way_bill_no,
+				create_time,
+				current_status,
+				green_truck_plate,
+				current_driver_name,
+				current_phone_no,
+				vehicle_identification_no,
+				driver_write_cargos,
+				second_cargos,
+				driver_write_mass,
+				current_mass,
+				over_due_time,
+				qrcode_path
+			)
+			VALUES(
+				#{id},
+				#{wayBillName},
+				#{wayBillNo},
+				#{createTime},
+				#{currentStatus},
+				#{greenTruckPlate},
+				#{currentDriverName},
+				#{currentPhoneNo},
+				#{vehicleIdentificationNo},
+				#{driverWriteCargos},
+				#{secondCargos},
+				#{driverWriteMass},
+				#{currentMass},
+				#{overDueTime},
+				#{qrcodePath}
+			)
+	</insert>
+	
+	
+	
+	<!-- 生成中间表 -->
+	<insert id="addToTruckMiddleDriver"
+		parameterType="com.cdsf.greenpassdriver.domain.TruckMiddleDriver">
+			INSERT INTO t_truck_middle_driver(
+				id,
+				truck_flow_id,
+				driver_id
+			)
+			VALUES(
+				#{id},
+				#{truckFlowId},
+				#{driverId}
+			)
+	</insert>
+	
+	
+	
+	<!-- 根据汽车唯一标识来  查询获取Truck  -->
+	<select id="getTruckByVehicleIdentificationNo" parameterType="java.lang.String" resultType="com.cdsf.greenpassdriver.domain.Truck">
+		SELECT 
+			* 
+		FROM 
+			t_truck 
+		WHERE 
+		   vehicle_identification_no = #{vehicleIdentificationNo}
+	</select>
+	
+	
+	<!-- 根据汽车车牌来  查询获取Truck  -->
+	<select id="getTruckByTruckPlateNo" parameterType="java.lang.String" resultType="com.cdsf.greenpassdriver.domain.Truck">
+		SELECT 
+			* 
+		FROM 
+			t_truck 
+		WHERE 
+		   truck_plate = #{truckPlate}
+	</select>
+	
+	
+	
+	
+	<!-- 生成中间表  truck2bill-->
+	<insert id="addToTruckMiddleWayBill"
+		parameterType="com.cdsf.greenpassdriver.domain.TruckMiddleWayBill">
+			INSERT INTO t_truck_middle_waybill(
+				id,
+				truck_flow_id,
+				way_bill_id
+			)
+			VALUES(
+				#{id},
+				#{truckFlowId},
+				#{wayBillId}
+			)
+	</insert>
+	
+	<!-- 根据运单的主键id删除运单 -->
+	<delete id="deleteWayBillByDriverId" parameterType="java.lang.String">
+		DELETE FROM t_waybill WHERE id = #{wayBillId}
+	</delete>
+	
+	
+	<!-- 根据车辆唯一识别号删除绿通车 -->
+	<delete id="deleteGreenTruckByVehicleNo" parameterType="java.lang.String">
+		DELETE FROM t_truck WHERE vehicle_identification_no = #{vehicleIdentificationNo}
+	</delete>
+	
+		
+	<!-- 删除中间表的关系 -->
+	<delete id="deleteTruckMiddleWayBill" parameterType="java.lang.String">
+		DELETE FROM t_truck_middle_waybill WHERE way_bill_id = #{wayBillId}
+	</delete>
+	
+	
+	<!-- 根据车辆车牌号删除中间表的关系  Truck 和 driver -->
+	<delete id="deleteTruckMiddleDriverByTruckPlate" parameterType="java.lang.String">
+		DELETE FROM t_truck_middle_driver WHERE truck_flow_id = (
+			SELECT
+				flow_id
+			FROM
+				t_truck
+			WHERE
+				truck_plate = #{truckPlate}
+		)  and  driver_id = #{userId}
+	</delete>
+	
+	
+	<!-- 通过车牌号查询获取已完成运单 -->
+	<select id="getWaybillDoneByTruckplate" parameterType="java.lang.String" resultType="com.cdsf.greenpassdriver.domain.WayBill">
+		SELECT 
+			id,
+			way_bill_no,
+			way_bill_name,
+			driver_write_mass,
+			first_cargos,
+			second_cargos,
+			current_status,
+			over_due_time
+		FROM 
+			t_waybill 
+		WHERE 
+		   current_status = 1
+		AND
+		   green_truck_plate = #{truckPlate}
+	</select>
+	
+	
+	<!-- 根据运单的id查询已完成的运单  -->
+	<select id="getWaybillDoneByWayBillFlowIds" parameterType="java.lang.String" resultType="com.cdsf.greenpassdriver.domain.WayBill">
+		SELECT 
+			id,
+			way_bill_no,
+			way_bill_name,
+			driver_write_mass,
+			first_cargos,
+			second_cargos,
+			current_status,
+			over_due_time,
+			create_time,
+			driver_write_cargos,
+			qrcode_path
+		FROM 
+			t_waybill 
+		WHERE 
+		   current_status = 1
+		AND
+		   id 
+		in
+		<foreach collection="wayBillFlowIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}       
+        </foreach> 
+	</select>
+	
+	<!-- 根据运单的id查询未完成的运单  -->
+	<select id="getWaybillDoingByWayBillFlowIds" parameterType="java.lang.String" resultType="com.cdsf.greenpassdriver.domain.WayBill">
+		SELECT 
+			id,
+			way_bill_no,
+			way_bill_name,
+			driver_write_mass,
+			first_cargos,
+			second_cargos,
+			current_status,
+			over_due_time,
+			create_time,
+			driver_write_cargos,
+			qrcode_path
+		FROM 
+			t_waybill 
+		WHERE 
+		   current_status = 0
+		AND
+		   id 
+		in
+		<foreach collection="wayBillFlowIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}       
+        </foreach> 
+	</select>
+	
+	<!-- 根据货品的id查询货品的名称 -->
+	<select id="getCargosNameByIds" parameterType="java.lang.String" resultType="com.cdsf.greenpassdriver.domain.CargoTree">
+		SELECT 
+			*
+		FROM 
+			t_cargo_tree 
+		WHERE 
+		   1 = 1
+		AND
+		   id 
+		in
+		<foreach collection="secondCargoIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}       
+        </foreach> 
+	</select>
+	
+	
+	
+	<select id="getCargoById" parameterType="java.lang.Long" resultType="com.cdsf.greenpassdriver.domain.CargoTree">
+		SELECT 
+			*
+		FROM 
+			t_cargo_tree 
+		WHERE 
+		   1 = 1
+		AND
+		   id = #{parentId}
+	</select>
+	
+	
+	
+	
+	
+	
+	<!-- 通过车辆的id查询运单 -->
+	<select id="getWaybillDoingByTruckFlowIds" parameterType="java.lang.String" resultType="com.cdsf.greenpassdriver.domain.WayBill">
+		SELECT 
+			id,
+			way_bill_no,
+			way_bill_name,
+			driver_write_mass,
+			first_cargos,
+			second_cargos,
+			current_status,
+			over_due_time
+		FROM 
+			t_waybill 
+		WHERE 
+		   current_status = 1
+		AND
+		   green_truck_plate = #{truckPlate}
+	</select>
+	
+	
+	
+	<!-- 通过车牌号查询获取未完成运单  -->
+	<select id="getWaybillDoingByTruckplate" parameterType="java.lang.String" resultType="com.cdsf.greenpassdriver.domain.WayBill">
+		SELECT 
+			id,
+			way_bill_no,
+			way_bill_name,
+			driver_write_mass,
+			first_cargos,
+			second_cargos,
+			current_status,
+			over_due_time
+		FROM 
+			t_waybill 
+		WHERE 
+		   current_status = 0
+		AND
+		   green_truck_plate = #{truckPlate}
+	</select>
+	
+	<!-- 通过map参数来查询状态 -->
+	<select id="getWayBillStatus" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT 
+			count(1)
+		FROM 
+			t_waybill 
+		WHERE  
+		    1=1 
+		    <if test="paramMap != null">
+				   <if test="paramMap.auditConclusionStatus != -1 ">
+				   	    and audit_conclusion_status = #{paramMap.auditConclusionStatus}
+				   </if>
+				   <if test="paramMap.currentStatus != -1 ">
+				   		and current_status = #{paramMap.currentStatus}
+				   </if>
+				   <if test="paramMap.wayBillFlowIds != null">
+						and id 
+						in
+						<foreach collection="paramMap.wayBillFlowIds" index="index" item="item" open="(" separator="," close=")">
+				                #{item}       
+				        </foreach>  
+				   </if>
+		   </if>
+	</select>
+
+	
+	<!-- 通过电话号码查询获取TruckDriver对象 -->
+	<select id="getTruckDriverByPhoneNum" parameterType="java.lang.String" resultType="com.cdsf.greenpassdriver.domain.TruckDriver">
+		SELECT 
+			* 
+		FROM 
+			t_truck_driver 
+		WHERE 
+		   phone_num like CONCAT('%',#{phoneNum},'%')
+	</select>
+	
+	
+	
+	<!-- 根据司机的id找到对应的车的id   -->
+	<select id="getTruckFlowIdsByDriverId" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT 
+			truck_flow_id 
+		FROM 
+			t_truck_middle_driver 
+		WHERE 
+		   driver_id = #{driverId}
+	</select>
+	
+	
+	<!-- 根据车牌号查找车辆的主键,这儿可能会出现多个 -->
+	<select id="getTruckFlowIdsByTruckPlate" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT 
+			flow_id 
+		FROM 
+			t_truck 
+		WHERE 
+		   truck_plate = #{truckplate}
+	</select>
+	
+	
+	<!-- 根据车主键找到所有的运单主键 -->
+	<select id="getWayBillFlowIdsByTruckFlowIds" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT 
+			way_bill_id 
+		FROM 
+			t_truck_middle_waybill 
+		WHERE 1=1
+		AND 
+			truck_flow_id 
+		in
+		<foreach collection="truckFlowIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}       
+        </foreach>  
+		   
+	</select>
+	
+	
+	<!-- 根据货车的id找到对应的运单 -->
+	<select id="getWayBillFlowIdsByTruckFlowId" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT 
+			way_bill_id 
+		FROM 
+			t_truck_middle_waybill 
+		WHERE 
+		   truck_flow_id = #{truckFlowId}
+	</select>
+	
+	
+	<!-- 根据id 查询得到运单 -->
+	<select id="getWayBillByFlowId" parameterType="java.lang.String" resultType="com.cdsf.greenpassdriver.domain.WayBill">
+		SELECT 
+			* 
+		FROM 
+			t_waybill 
+		WHERE 
+		   id = #{wayBillFlowId}
+	</select>
+	
+	<!-- 根据id查询得到Truck -->
+	<select id="getTruckByFlowId" parameterType="java.lang.String" resultType="com.cdsf.greenpassdriver.domain.Truck">
+		SELECT 
+			* 
+		FROM 
+			t_truck 
+		WHERE 
+		   flow_id = #{truckFlowId}
+	</select>
+	
+
+	
+	<!-- 得到货品树对象 -->
+	<select id="getCargoTreeData"  resultType="com.cdsf.greenpassdriver.domain.CargoTree">
+		SELECT 
+			* 
+		FROM 
+			t_cargo_tree 
+		
+	</select>
+	
+	<!-- 根据userId得到货车司机 -->
+	<select id="getTruckDriverByUserId"  resultType="com.cdsf.greenpassdriver.domain.TruckDriver">
+		SELECT 
+			* 
+		FROM 
+			t_truck_driver
+		WHERE
+		    flow_id = #{driverId} 
+	</select>
+	
+	
+	
+	<!-- 修改 GreenPassTruck-->
+	<update id="updateGreenPassTruck"  parameterType="com.cdsf.greenpassdriver.domain.Truck">
+		 UPDATE 
+		 	t_truck
+		 set
+		 	truck_plate = #{truckPlate},
+		 	vehicle_identification_no = #{vehicleIdentificationNo}
+		 WHERE flow_id=#{flowId}
+	</update>
+	
+	
+</mapper>

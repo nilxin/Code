@@ -1,0 +1,128 @@
+
+<div id="InspectionReview">
+	<h3>驾驶人员评价</h3>
+		
+	<!-- 添加辛凯代码 -->
+	<div class="subScroll sub_container" style="width: 100%;height: 100%;">
+		<div class="search d1">
+		  <form>
+		  <input class="btn-value" type="text" placeholder="请输入驾驶证件号...">
+		  <button class="btn-search" type="button"></button>
+		  </form>
+		</div>
+		<div align="center"><div style="width: 1024px;height:600px;" id="personal"></div></div>
+	</div>
+</div>
+
+<script rel="script">
+	define(function(require){
+		require("driverEvaluate/js/echarts.min.js");
+		require("driverEvaluate/js/china.js");
+		require("driverEvaluate/css/normalize.css");
+		require("driverEvaluate/css/font-awesome.min.css");
+		require("driverEvaluate/css/demo.css");
+		require("driverEvaluate/css/style.css");
+		var base=require("Base");
+
+		return base.extend({
+			onInit: function(){
+				this.buildRadar();
+				this.getRadarData();
+				$(".subScroll").loadScroll();
+			},
+			buildRadar: function(){
+				this.radar = echarts.init(document.getElementById('personal'));//绿通车各站点排名
+
+				// 驾驶行为评价
+				var option1 = {
+					title: {
+						text: '驾驶人员身份评价',
+						 x: 'center', 
+					},
+					textStyle: {       
+						color: 'black'
+		            },
+					tooltip: {},
+					radar: {
+						// shape: 'circle',
+						indicator: [
+						{ name: '身份认证', max: 5},
+						{ name: '车辆驾驶习惯', max: 5},
+						{ name: '偷逃通行费', max: 5},
+						{ name: '人群特质', max: 5},
+						{ name: '个人信息', max: 5},
+						]
+					},
+					series: [{
+						name: '驾驶人员能力',
+						type: 'radar',
+						// areaStyle: {normal: {}},
+						data : [
+							{
+								value : [3,4,4,2,2],
+								name : '平均能力'
+							},
+							{
+								value : [5,3,4,2,5],
+								name : ''
+							}
+						]
+					}]
+				}
+
+		        // 使用刚指定的配置项和数据显示图表
+		        this.radar.clear();
+		        this.radar.setOption(option1);
+			},
+			// 获取雷达图数据并set到echart
+			getRadarData: function(){
+				var self=this;
+				var competence=[];
+				// 查询按钮绑定事件
+				$(".btn-search").on("click",function(){
+					var value=$(".btn-value").val();
+					if(value.length==18 && typeof parseInt(value)=="number"){
+						S.request({
+							url:"",
+							data:value,
+							success: function(data){
+								if(data.radarData!=0){
+									data.radarData.forEach(function(i,v){
+										//将返回数据添加到competence数组
+									})
+								}
+							}
+						})
+						// 将数据set到echart上
+						self.radar.setOption({
+							series: [{
+								name: '驾驶人员能力',
+								type: 'radar',
+								// areaStyle: {normal: {}},
+								data : [
+									{
+										value : [3,4,4,2,2],
+										name : '平均能力'
+									},
+									{
+										value : competence,
+										name : ''
+									}
+								]
+							}]
+						})
+					}else{
+						$.zAlert("请输入18位正确的身份证号码","fail");
+					}
+
+				})
+				
+				
+
+			}
+
+		})
+
+
+	})
+</script>

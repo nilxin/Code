@@ -1,0 +1,207 @@
+
+/*#InspectionReview h3{
+	font-weight: normal;
+    font-size: 20px;
+    text-align: center;
+    line-height: 60px;
+}*sf2263/
+/* *****************************************************稽查复核详情展示************************************************************ */
+
+#reviewDetails{
+	position: absolute;
+	top:0;
+	left:0;
+	right:0;
+	bottom:0;
+	background: #e1e9f0;
+	display:none;
+	padding: 15px 25px;
+}
+#reviewDetails p{
+	text-align: center;
+	line-height: 60px;
+	font-size:18px;
+}
+#reviewDetails .closeInfo{
+	position: absolute;
+	right:35px;
+	top:24px;
+	width:60px;
+	height:30px;
+	background: #006ab9;
+	color:#FFFFFF;
+	text-decoration: none;
+	text-align: center;
+	line-height: 30px;
+	transition: all 0.4s ease-in-out;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    -o-transition: all 0.4s ease-in-out;
+}
+#reviewDetails .closeInfo:hover{
+	transform: scale(1.2);
+    -webkit-transform: scale(1.2);
+    -moz-transform: scale(1.2);
+    -o-transform: scale(1.2);
+    -ms-transform: scale(1.2);
+    -moz-box-shadow: 0px 1px 10px 1px #1c5067;
+	-webkit-box-shadow: 0px 1px 10px 1px #1c5067;
+	box-shadow: 0px 1px 10px 1px #1c5067;
+    /*background: #0096CE;*/
+}
+#reviewDetails .closeInfo:active{
+	 background: #0188F8;
+}
+#reviewDetails .reviewDetailsBox{
+	width:100%;
+	height: -moz-calc(100% - 60px);
+    height: -webkit-calc(100% - 60px);
+    height: calc(100% - 60px);
+}
+#reviewDetails .reviewDetailsBox .reviewDetails_table{
+    height:105px;
+    overflow: hidden;
+    margin: 0 10px;
+}
+#reviewDetails .reviewDetails_table .reviewDetails_table_head{
+	line-height: 40px;
+    background: #323a44;
+    color: #fff;
+    border: 1px solid #AAAAAA;
+}
+#reviewDetails .reviewDetails_table_head span{
+	float: left;
+	text-align: center;
+	font-size: 16px;
+	border:1px solid #AAAAAA;
+	border-left:none;
+	box-sizing: border-box;
+}
+#reviewDetails .reviewDetailsBox .reviewDetails_pic{
+	width: -moz-calc(100%);
+    width: -webkit-calc(100%);
+    width: calc(100%);
+    height: -moz-calc(100% - 105px);
+    height: -webkit-calc(100% - 105px);
+    height: calc(100% - 105px);
+    overflow: hidden;
+}
+#reviewDetails .reviewDetails_pic h2{
+	font-size: 18px;
+	line-height: 40px;
+	text-align: center;	
+}
+#reviewDetails .reviewDetails_pic li{
+	text-align: center;
+	padding: 10px 10px 5px 10px;
+	margin: 0 10px;
+	border: 1px solid #888;
+	width: calc(33.33% - 20px);
+	background: #F5FFFA;
+}
+#ul_picInfo{
+	border: 1px solid #888;
+	padding: 10px 0;
+	margin: 0 10px;
+}
+#reviewDetails .reviewDetails_pic img{
+	display: inline-block;
+	max-width: 100%;
+	max-height: 300px;
+	padding: 0 5px 10px 5px;
+	cursor: pointer;
+}
+#reviewDetails .reviewDetails_table .reviewDetails_table_body{
+	height: -moz-calc(100% - 62px);
+    height: -webkit-calc(100% - 62px);
+    height: calc(100% - 62px);
+    border: 1px solid #AAAAAA;
+    border-top: none;
+}
+#reviewDetails .reviewDetails_table_body li{
+	line-height: 40px;
+}
+#reviewDetails .reviewDetails_table_body span{
+	float: left;
+	font-size: 14px;
+	text-align: center;
+	box-sizing: border-box;
+}
+
+.qualified:hover,.abnormal:hover,.isBlack:hover,.isDelete:hover{
+    background: #ebebeb;
+    box-shadow: 0 0 5px 1px;
+    border-radius: 2px;
+}
+
+
+#reviewDetails .reviewDetails_table_body span:not(:last-child){
+	border-right: 1px solid #AAAAAA;
+}
+
+#reviewDetails .reviewDetails_table_body a{
+	display: inline-block;
+	width:40%;
+	height:30px;
+	line-height: 30px;
+	background: #0998F5;
+	color:#FFFFFF;
+	cursor:pointer;
+}
+#reviewDetails .reviewDetails_table_body a:hover{
+	background: #27A4F6;
+	-moz-box-shadow: 0px 1px 10px 1px #1c5067;
+	-webkit-box-shadow: 0px 1px 10px 1px #1c5067;
+	box-shadow: 0px 1px 10px 1px #1c5067;
+}
+#reviewDetails .reviewDetails_table_body a:active{
+	background: #0A99F7;
+}
+
+/* *****************************************************绿通车统计图表************************************************************ */
+
+#echartsBox .echartsBox{
+	width:100%;
+	height: -moz-calc(100% - 60px);
+    height: -webkit-calc(100% - 60px);
+    height: calc(100% - 60px);
+}
+#echartsBox .echartsBox_left,#echartsBox .echartsBox_right{
+	width:50%;
+	height:100%;
+}
+#echartsBox .echartsBox_echarts{
+	width:90%;
+	height:80%;
+	margin:60px auto;
+}
+/* *****************************************************打逃金额统计 图表************************************************************ */
+.echartsContent{
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: #FFFFFF;
+}
+#echartsTop10{
+	width: 100%;
+	height:100%;
+}
+.hitAmountInfo{
+	position: absolute;
+	left: 55%;
+	padding: 5px 10px;
+	z-index: 99;
+	border:1px solid #0472BF;
+	background:#0472BF;
+	color: #FFFFFF;
+	cursor: pointer;
+	top:3px;
+}
+.hitAmountInfo:hover{
+	background:#02A1E9;
+}
+.hitAmountInfo:active{
+	background:#0AA8EF;
+}

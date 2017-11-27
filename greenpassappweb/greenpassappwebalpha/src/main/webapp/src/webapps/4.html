@@ -1,0 +1,504 @@
+<div id="hitAmount">
+	<h3>打逃金额统计</h3>
+	<!-- 打击金额统计条件 -->
+	<div class="checkTime clearfix">
+		<div class="checkIllegalTime_box fl">
+			<span>
+				<input type="number" placeholder="次数" name="startIllegalTimes" id="startIllegalTimes">
+			</span>
+			<span class="timeTo">至</span>
+			<span>
+				<input type="number" placeholder="次数" name="endIllegalTimes" id="endIllegalTimes">
+			</span>
+		</div>
+		<div>
+			<input type="text" class="searchCondition" placeholder="关键字:员工工号" name = "truckPlateSearch" id="searchConditionId"></input>
+		</div>
+		<div class="checkTime_btn fl">
+			<span class="statistics">统&nbsp;计</span>
+		</div>
+		<a class="backTo">返回</a>
+		<div class="pagingBox">
+			<div><a class="prevBtn">上一页</a>当前第<span class="nowPage">10</span>页\共<span class="totalPage">20</span>页<a class="nextBtn">下一页</a></div>
+		</div>
+	</div>
+	<div class="page1"></div>
+	<div class="page2"></div>
+	<!-- 打击金额统计表格展示 -->
+	<!-- <div class="tableBox" data-page=1>
+		<div class="table_head clearfix">
+			<span class="w33">稽查工号</span>
+			<span class="w33">打逃金额</span>
+			<span class="w33">打逃次数</span>
+		</div>
+		<div id="table_body_box_hitAmount" class="table_body_box">
+			<ul class="table_body">
+			
+			</ul>
+		</div>
+	</div> -->
+	<!-- 员工工作统计 -->
+<!-- 	<div class="tableBox" data-page=2>
+		<div class="table_head clearfix">
+			<span class="w25">运单号</span>
+			<span class="w25">稽查时间</span>
+			<span class="w25">品类</span>
+			<span class="w25">稽查结论</span>
+		</div>
+		<div id="table_body_box_Employee" class="table_body_box">
+			<ul class="table_body">
+				<li class=" clearfix">
+					<span class="w25">201705059527</span>
+					<span class="w25">2017-05-05 09:24:58</span>
+					<span class="w25">鲜活蔬菜 鲜活水果</span>
+					<span class="w25">混装超过80%</span>
+				</li>
+				<li class=" clearfix">
+					<span class="w25">201705059529</span>
+					<span class="w25">2017-05-05 09:29:58</span>
+					<span class="w25">鲜活蔬菜 鲜活水果</span>
+					<span class="w25">混装超过60%</span>
+				</li>
+			</ul>
+		</div>
+	</div> -->
+</div>
+<div class="echartsContent">
+	<span class="hitAmountInfo">统计详情</span>
+	<div id="echartsTop10"></div>
+</div>
+<script rel="script">
+    define(function(require){
+        var base = require("Base"),
+        	_self; 
+        return base.extend({
+			onInit : function(options){
+				console.log("xxxx  onInit:  optionsxxxxxxx"+JSON.stringify(options));
+				_self = this;
+				_self.statisticsClick();//统计按钮  点击事件
+				_self.workStatistics();//下钻到员工工作统计
+				_self.backTostatistics();//返回 打击金额统计
+				_self.clickpagingBtn();//上一页 下一页
+				_self.drawTop();//echartsTop10 图表
+				_self.hitAmountInfo();//关闭图表 查看打击金额统计的表格
+				$('#table_body_box_hitAmount').mCustomScrollbar({//初始化表格滚动条
+					mouseWheelPixels:80,
+					scrollButtons:{
+						enable:false,
+						scrollType:"continuous",
+						scrollSpeed:20,
+						scrollAmount:40
+					},
+				 	horizontalScroll:false,
+				});
+			},
+			//统计按钮  点击事件
+			statisticsClick : function(){
+				var startIllegalTimes,endIllegalTimes,searchConditionKeyWords;
+				$("#container").off('click','#hitAmount .statistics').on('click','#hitAmount .statistics',function(){
+					startIllegalTimes = $("#startIllegalTimes").val();
+					endIllegalTimes = $("#endIllegalTimes").val();
+					searchConditionKeyWords = $("#searchConditionId").val();
+					pageNum = $(".tableBox").attr("data-page");
+
+					// alert("pageNum:"+pageNum);
+					if(pageNum == 1){
+						var default_pageIndex = 1,
+					    default_pageRows = 4,
+					    url = "/greenpassappwebalpha/app/webstatistics/strikecash.json",
+					    pageId = 1;
+						_self.drawData(pageId,url,default_pageIndex,default_pageRows,null,startIllegalTimes,endIllegalTimes,searchConditionKeyWords);
+					}else if(pageNum == 2){
+						$("#searchConditionId").attr("placeholder","关键字");
+
+					}
+
+
+					if (!(startTime !== "" && endTime !== "" && auditorWorkNo !== "")) return;
+						alert(startTime+"---"+endTime+"---"+auditorWorkNo+"---"+pageNum)
+				});
+			},
+			//下钻到员工工作统计
+			workStatistics : function(){
+				$("#container").off('click','.reviewData').on('click','.reviewData',function(e){
+					$(".backTo").show();
+					$("#hitAmount>h3").html("员工工作统计");
+					//$(".tableBox").html(_self.stitching()).attr("data-page",2); //员工详情 拼接字符串
+					var auditorId = $(e.target).attr("auditorid");
+					var default_pageIndex = 1,
+					    default_pageRows = 4,
+					    url = "/greenpassappwebalpha/app/webstatistics/strikecashdetail.json",
+					    pageId = 2;
+					_self.drawData(pageId,url,default_pageIndex,default_pageRows,auditorId);
+					$('#table_body_box_Employee').mCustomScrollbar({//初始化表格滚动条
+						mouseWheelPixels:80,
+						scrollButtons:{
+							enable:false,
+							scrollType:"continuous",
+							scrollSpeed:20,
+							scrollAmount:40
+						},
+					 	horizontalScroll:false,
+					});
+				});
+			},
+			//员工工作统计 拼接字符串 
+			stitching : function(data){
+				var html = '',
+					htmlArr = [];
+				html += '<div class="table_head clearfix"><span class="w25">运单号</span><span class="w25">稽查时间</span><span class="w25">品类</span><span class="w25">稽查结论</span></div><div id="table_body_box_Employee" class="table_body_box"><ul class="table_body">';
+					for (var i = 0,len = 20; i < len; i++  ) {
+						htmlArr.push('<li class=" clearfix"><span class="w25">201705059527</span><span class="w25">2017-05-05 09:24:58</span><span class="w25">鲜活蔬菜 鲜活水果</span><span class="w25">混装超过80%</span></li>');
+					};
+				html += htmlArr.join('');	
+				html += '</ul></div>';
+				return html;
+			},
+			//打击金额统计 拼接字符串 
+			fightAgainst : function(data){
+				var html = '',
+					htmlArr = [];
+				html += '<div class="table_head clearfix"><span class="w33">稽查工号</span><span class="w33">打逃金额</span><span class="w33">打逃次数</span></div><div id="table_body_box_hitAmount" class="table_body_box"><ul class="table_body">';
+					for (var i = 0,len = 28; i < len; i++  ) {
+						htmlArr.push('<li class="reviewData clearfix"><span class="w33">9527</span><span class="w33">188</span><span class="w33">1280</span></li>');
+					};
+				html += htmlArr.join('');	
+				html += '</ul></div>';
+				return html;
+			},
+			test : function(){
+				alert(111111111111);
+			},
+			//返回 打击金额统计
+			backTostatistics : function(){
+				$("#container").off('click','.backTo').on('click','.backTo',function(){
+					$(this).hide();
+					$("#hitAmount>h3").html("打击金额统计");
+					//这里最好用样式的隐藏来进行控制,从哪儿进来就返回到哪儿而不是返回到第一页
+					//alert("xxxxxx"+$(".tableBox").attr("data-page"));
+					// if($(".tableBox").attr("data-page") == 2){
+					// 	$("div[data-page = '2']").css("display","none");
+					// 	$("div[data-page = '1']").css("display","block");
+					// }else{
+						
+					// }
+
+
+					
+					//$(".tableBox").html(_self.fightAgainst()).attr("data-page",1); //打击金额统计 拼接字符串 
+					var default_pageIndex = 1,
+					    default_pageRows = 4,
+					    url = "/greenpassappwebalpha/app/webstatistics/strikecash.json",
+					    pageId = 1;
+					_self.drawData(pageId,url,default_pageIndex,default_pageRows);
+					$('#table_body_box_hitAmount').mCustomScrollbar({//初始化表格滚动条
+						mouseWheelPixels:80,
+						scrollButtons:{
+							enable:false,
+							scrollType:"continuous",
+							scrollSpeed:20,
+							scrollAmount:40
+						},
+					 	horizontalScroll:false,
+					});
+				});
+			},
+			//上一页 下一页
+			clickpagingBtn : function(){
+				$("#container").off('click','.prevBtn').on('click','.prevBtn',function(){
+					var nowPageNum = parseInt($(".nowPage").html(), 10);
+					if (nowPageNum <= 1){
+						$.zAlert("已经是第一页");
+						return;
+					}
+					$(".nowPage").html(--nowPageNum);
+				});
+				$("#container").off('click','.nextBtn').on('click','.nextBtn',function(){
+					var nowPageNum = parseInt($(".nowPage").html(), 10);
+					var totalNum = parseInt($(".totalPage").html(), 10);
+					if (nowPageNum >= totalNum){
+						$.zAlert("已经是最后一页");
+						return;
+					}
+					$(".nowPage").html(++nowPageNum);
+				});
+			},
+			//echartsTop10 图表
+			drawTop : function(){
+				console.log("-in--drawTop:---");
+				var myBarChart = echarts.init(document.getElementById('echartsTop10'));
+				
+				var requestOption = {};
+				requestOption.data = {
+						"page.index":1,
+						"page.rows":10
+					};
+				requestOption.url = "/greenpassappwebalpha/app/webstatistics/strikecash.json";
+				requestOption.success = function(data){
+					//循环填充数据
+					var _data = data.data;
+					if(_data.status != 0){
+						var dataContent = _data.content;
+						var data_list = dataContent.list,
+						    dataAxis = [],
+						    data=[];
+						for(var i=0,len=data_list.length;i<len;i++){
+							dataAxis.push(data_list[i].auditorName);
+							data.push(data_list[i].fightEscapCost);
+						}
+						console.log("---dataAxis-------"+JSON.stringify(dataAxis));
+						console.log("----data------"+JSON.stringify(data));
+						//var dataAxis = ['张三', '李四', '王五', '赵六', '钱七', 'star', 'Sun','沈二','正大','桑桑'];
+						//var data = [10788, 6582, 2070, 1374, 1390, 1330, 1240, 3130, 410, 1011];
+						var option = {
+								title: {
+							        text: '打击金额统计Top10',
+							        textStyle: {  
+										fontSize:'18',
+						                fontWeight: '800',              //标题颜色  
+						            }, 
+						            x:'center'
+							    },
+							    tooltip : {
+							        trigger: 'axis',
+							        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+							            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+							        }
+							    },
+							    legend: {
+							        data:['打击金额统计Top10'],
+							    },
+							    toolbox : {
+						    		show: true,
+							        feature: {
+							            magicType: {type: ['line', 'bar']},
+							            restore: {},
+							            saveAsImage: {}
+							        },
+							        iconStyle : {
+							        	normal : {
+							        		borderColor : '#03DA8E'
+							        	}
+							        }
+						    	},
+							    grid: {
+							        left: '3%',
+							        right: '4%',
+							        bottom: '3%',
+							        containLabel: true,
+							    },
+							    xAxis: {
+							        type: 'category',
+							        data: dataAxis,
+							        axisTick: {
+						                alignWithLabel: true
+						            },
+						            axisLabel: {
+		                                show: true,
+		                                textStyle: {
+		                                    color: '#72ACD1'
+		                                },
+		                                interval:0,//横轴信息全部显示  
+		                         		rotate:-16,//-30度角倾斜显示  
+		                            },
+		                            axisLine:{
+						                lineStyle:{
+						                    color:'#72ACD1',
+						                    type : 'dotted'
+						                    // width:8,//这里是为了突出显示加上的，可以去掉
+						                }
+						            }
+							    },
+							    yAxis:  {
+							        type: 'value',
+							        axisLabel: {
+		                                show: true,
+		                                textStyle: {
+		                                    color: '#72ACD1'
+		                                }
+		                            },
+		                            axisLine:{
+						                lineStyle:{
+						                    color:'transparent',
+						                }
+						            }
+							    },
+							    series: [
+							        {
+							            name: '',
+							            type: 'bar',
+							            stack: '总量',
+							            itemStyle: {
+					                    normal: {
+					                    	barBorderRadius: 10,
+					                        color: function(params) { // build a color map as your need.
+					                        		var colorList = [];
+					                        		colorList = [//好，这里就是重头戏了，定义一个list，然后根据所以取得不同的值，这样就实现了，
+														'#0280F0','#038DE6','#0589FE','#2E8CDE','#2EAAE9','#4AADFF','#63B9FC','#81D5EE'
+					                           		];
+						                            return colorList[params.dataIndex]
+					                       		}
+					                    	}
+					                	},
+							            label: {
+							                normal: {
+							                    show: true,
+							                    position: 'top',
+												color:'#FFFFFF'
+							                }
+							            },
+							            data: data
+							        },
+							    ]	    
+						};
+						myBarChart.setOption(option,true);
+					}else{
+						alert();
+					}
+				}
+				requestOption.error = function(e){
+					alert(JOSN.stringify(e));
+				}
+				S.request(requestOption);
+			},
+			
+			drawData : function(pageId,url,default_pageIndex,default_pageRows,auditorId,startIllegalTimes,endIllegalTimes,auditWorkNo){
+				var requestOption = {};
+				requestOption.data = {
+						"page.index":default_pageIndex,
+						"page.rows":default_pageRows,
+						"auditorId":auditorId,
+						"startIllegalTimes":startIllegalTimes,
+						"endIllegalTimes":endIllegalTimes,
+						"auditWorkNo":auditWorkNo
+					};
+				requestOption.url = url;
+				requestOption.success = function(data){
+					//循环填充数据
+					var _data = data.data;
+					if(_data.status != 0){
+						var $ul = $(".table_body");
+						var dataContent = _data.content;
+						totalRows = dataContent.total;
+						if(Math.ceil(totalRows/default_pageRows) <= 0){
+							totalPage = 1;
+						}else{
+							totalPage = Math.ceil(totalRows/default_pageRows);
+						}
+						console.log(totalPage);
+						$(".totalPage").html(totalPage);
+						var data_list = dataContent.list;
+
+						if(pageId == 1){
+							//打逃金额详情统计
+
+							// var $node_table = $(".tableBox").attr("data-page",1);
+							// debugger;
+							$(".page1").empty();
+							$(".page2").empty();
+							var $node_table = $('<div class="tableBox" data-page=1></div>');
+							$node_table.empty();
+							var $div_table = $("<div  class='table_head clearfix'></div>");
+							var $div_table_span_adn = $('<span class="w33">稽查工号</span>');
+							var $div_table_span_fec = $('<span class="w33">打逃金额</span>');
+							var $div_table_span_fet = $('<span class="w33">打逃次数</span>');
+							$div_table.append($div_table_span_adn);
+							$div_table.append($div_table_span_fec);
+							$div_table.append($div_table_span_fet);
+							$node_table.append($div_table);
+
+							var $div_table_box = $('<div id="table_body_box_hitAmount" class="table_body_box"></div>');
+							var $div_table_box_ul = $('<ul class="table_body"></ul>');
+
+							// var node = $("<li class='reviewData clearfix'></li>");
+							// var cloneNode;
+							for(var i=0,len=data_list.length;i<len;i++){
+								var node = $("<li class='reviewData clearfix'></li>");
+								var $currentAuditorNo = $("<span class='w33' auditorid="+data_list[i].auditorId+">"+data_list[i].auditWorkNo+"</span>");
+								var $fightEscapCost = $("<span class='w33' auditorid="+data_list[i].auditorId+">"+data_list[i].fightEscapCost+"</span>");
+								var $fightEscapeTimes = $("<span class='w33' auditorid="+data_list[i].auditorId+">"+data_list[i].fightEscapeTimes+"</span>");
+								node.append($currentAuditorNo);
+								node.append($fightEscapCost);
+								node.append($fightEscapeTimes);
+								// cloneNode = node.clone(true);
+								$div_table_box_ul.append(node);
+							}
+							// $div_table_box_ul.append(cloneNode);
+							$div_table_box.append($div_table_box_ul);
+							$node_table.append($div_table_box);
+							$(".page1").append($node_table);
+						}else if(pageId == 2){
+							//员工工作统计
+							//$("div[data-page = '1']").css("display","none");
+
+							//var $node_table = $(".tableBox").attr("data-page",2);
+							$(".page1").empty();
+							var $node_table = $('<div class="tableBox" data-page=2></div>');
+							$node_table.empty();
+							var $div_table = $("<div  class='table_head clearfix'></div>");
+							var $div_table_span_wbn = $('<span class="w25">运单号</span>');
+							var $div_table_span_wbt = $('<span class="w25">稽查时间</span>');
+							var $div_table_span_wbc = $('<span class="w25">品类</span>');
+							var $div_table_span_wba = $('<span class="w25">稽查结论</span>');
+							$div_table.append($div_table_span_wbn);
+							$div_table.append($div_table_span_wbt);
+							$div_table.append($div_table_span_wbc);
+							$div_table.append($div_table_span_wba);
+							$node_table.append($div_table);
+
+
+							var $div_table_box = $('<div id="table_body_box_Employee" class="table_body_box"></div>');
+							var $div_table_box_ul = $('<ul class="table_body"></ul>');
+
+							// var node = $("<li class='clearfix'></li>");
+							// var cloneNode;
+							for(var i=0,len=data_list.length;i<len;i++){
+								var node = $("<li class='clearfix'></li>");
+								var $wayBillNo = $("<span class='w25'>"+data_list[i].wayBillNo+"</span>");
+								var $auditTimestr = $("<span class='w25'>"+data_list[i].auditTimestr+"</span>");
+								var $cargos = $("<span class='w25'>"+data_list[i].displayCargosName+"</span>");
+								if(data_list[i].conclusionContentStr){
+									var $conclusionContentStr = $("<span class='w25'>"+data_list[i].conclusionContentStr+"</span>");
+								}else{
+									var $conclusionContentStr = $("<span class='w25'>N/A</span>");
+								}
+								
+								node.append($wayBillNo);
+								node.append($auditTimestr);
+								node.append($cargos);
+								node.append($conclusionContentStr);
+								// cloneNode = node.clone(true);
+								$div_table_box_ul.append(node);
+							}
+							// $div_table_box_ul.append(cloneNode);
+							$div_table_box.append($div_table_box_ul);
+							$node_table.append($div_table_box);
+							$(".page2").append($node_table);
+						}
+					}else{
+						alert();
+					}
+				}
+					requestOption.error = function(e){
+					console.log("后台数据接口出错!");
+				}
+				S.request(requestOption);
+			},
+			
+			
+			//关闭图表 查看打击金额统计的表格
+			hitAmountInfo : function(){
+				$(".hitAmountInfo").off('click').on('click',function(){
+					$("#echartsTop10").html("").parent().fadeOut(400);
+					$(".nowPage").html(1);
+					$(".totalPage").html(1);
+					var default_pageIndex = 1,
+					    default_pageRows = 4,
+					    url = "/greenpassappwebalpha/app/webstatistics/strikecash.json",
+					    pageId = 1;
+					_self.drawData(pageId,url,default_pageIndex,default_pageRows);
+				});
+			} 
+		})
+	})
+</script>

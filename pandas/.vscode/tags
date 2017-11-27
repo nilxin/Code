@@ -1,0 +1,63 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+Categorical	../Object/pandas_Object_Categorical.py	/^from pandas import Categorical$/;"	kind:namespace	line:4
+a	../Object/pandas_Object_Categorical.py	/^a = Categorical(['a','b','c','a','b','c'], ['c', 'b', 'a'],ordered=True)$/;"	kind:variable	line:10
+data	../Method/pandas_Date Cleaning.py	/^data = pd.merge(left=df1, right=df2, how='left', left_on='col1', right_on='col1')$/;"	kind:variable	line:28
+data1	../Method/pandas_Date Cleaning.py	/^data1=data.replace({'col1':1,'col2':2},np.nan)$/;"	kind:variable	line:46
+data_url	../Method/pandas_Join_Combine.py	/^data_url = "https:\/\/raw.githubusercontent.com\/alstat\/Analysis-with-Programming\/master\/2014\/Python\/Numerical-Descriptions-of-the-Data\/data.csv"$/;"	kind:variable	line:6
+data_url	../Method/pandas_Viewing_inspecting Data.py	/^data_url = "https:\/\/raw.githubusercontent.com\/alstat\/Analysis-with-Programming\/master\/2014\/Python\/Numerical-Descriptions-of-the-Data\/data.csv"$/;"	kind:variable	line:8
+dates	../Method/pandas_Date Cleaning.py	/^dates=pd.date_range('20170729',periods=6)$/;"	kind:variable	line:11
+dates	../Method/pandas_Index_Method.py	/^dates=pd.date_range('20170729',periods=6)$/;"	kind:variable	line:8
+dates	../Method/pandas_Selection_Fliter_Sort_Groupby.py	/^dates=pd.date_range('20170729',periods=6)$/;"	kind:variable	line:6
+dates	../Method/pandas_Statistics.py	/^dates=pd.date_range('20170729',periods=6)$/;"	kind:variable	line:8
+dates	../Object/pandas_Object_DataFrame.py	/^dates=pd.date_range('20170729',periods=6)$/;"	kind:variable	line:6
+df	../Method/pandas_Creato_Objects.py	/^df=pd.DataFrame(np.random.rand(20,5))/;"	kind:variable	line:6
+df	../Method/pandas_Date Cleaning.py	/^df = pd.DataFrame( np.random.randn(6,4),index=dates,columns=list('ABCD') )$/;"	kind:variable	line:12
+df	../Method/pandas_Importing_Exporting Data.py	/^df=pd.read_csv('\/Workspace\/Code\/Python\/test.csv',encoding='gbk') #可代参数encodeing$/;"	kind:variable	line:6
+df	../Method/pandas_Index_Method.py	/^df = pd.DataFrame(np.random.randn(6,4),index=dates,columns=list('ABCD'))$/;"	kind:variable	line:9
+df	../Method/pandas_Index_Method.py	/^df = pd.DataFrame({'key1':['a', 'a', 'b', 'b', 'a'],$/;"	kind:variable	line:19
+df	../Method/pandas_Selection_Fliter_Sort_Groupby.py	/^df = pd.DataFrame(np.random.randn(6,4),index=dates,columns=list('ABCD'))$/;"	kind:variable	line:7
+df	../Method/pandas_Statistics.py	/^df = pd.DataFrame(np.random.randn(6,4),index=dates,columns=list('ABCD'))$/;"	kind:variable	line:9
+df	../Method/pandas_Viewing_inspecting Data.py	/^df = pd.read_csv(data_url)$/;"	kind:variable	line:10
+df	../Method/pandas_pivot_table.py	/^df = pd.DataFrame({'A' : ['one', 'one', 'two', 'three'] * 3,$/;"	kind:variable	line:10
+df	../Object/pandas_Object_DataFrame.py	/^df = pd.DataFrame(np.random.randn(6,4),index=dates,columns=list('ABCD'))$/;"	kind:variable	line:7
+df1	../Method/pandas_Date Cleaning.py	/^df1 = pd.DataFrame([{'col1':1, 'col2':1}, {'col1':1, 'col2':2}])$/;"	kind:variable	line:26
+df2	../Method/pandas_Date Cleaning.py	/^df2 = pd.DataFrame([{'col1':2, 'col3':11}, {'col1':2, 'col3':33}])$/;"	kind:variable	line:27
+dframe1	../Method/pandas_Join_Combine.py	/^dframe1 = dframe2$/;"	kind:variable	line:9
+dframe2	../Method/pandas_Join_Combine.py	/^dframe2 = pd.read_csv(data_url)$/;"	kind:variable	line:8
+grouped_key1	../Method/pandas_Index_Method.py	/^grouped_key1 = df['data1'].groupby(df['key1'])$/;"	kind:variable	line:32
+grouped_key1_key2	../Method/pandas_Index_Method.py	/^grouped_key1_key2 = df['data1'].groupby([df['key1'], df['key2']])$/;"	kind:variable	line:35
+np	../Method/pandas_Date Cleaning.py	/^import numpy as np$/;"	kind:namespace	line:9
+np	../Method/pandas_Index_Method.py	/^import numpy as np$/;"	kind:namespace	line:6
+np	../Method/pandas_Join_Combine.py	/^import numpy as np$/;"	kind:namespace	line:5
+np	../Method/pandas_Selection_Fliter_Sort_Groupby.py	/^import numpy as np$/;"	kind:namespace	line:4
+np	../Method/pandas_Statistics.py	/^import numpy as np$/;"	kind:namespace	line:6
+np	../Method/pandas_pivot_table.py	/^import numpy as np$/;"	kind:namespace	line:5
+np	../Object/pandas_Object_DataFrame.py	/^import numpy as np$/;"	kind:namespace	line:4
+pandas_Creato_Objects.py	../Method/pandas_Creato_Objects.py	1;"	kind:file	line:1
+pandas_Date Cleaning.py	../Method/pandas_Date Cleaning.py	1;"	kind:file	line:1
+pandas_Importing_Exporting Data.py	../Method/pandas_Importing_Exporting Data.py	1;"	kind:file	line:1
+pandas_Index_Method.py	../Method/pandas_Index_Method.py	1;"	kind:file	line:1
+pandas_Join_Combine.py	../Method/pandas_Join_Combine.py	1;"	kind:file	line:1
+pandas_Object_Categorical.py	../Object/pandas_Object_Categorical.py	1;"	kind:file	line:1
+pandas_Object_DataFrame.py	../Object/pandas_Object_DataFrame.py	1;"	kind:file	line:1
+pandas_Selection_Fliter_Sort_Groupby.py	../Method/pandas_Selection_Fliter_Sort_Groupby.py	1;"	kind:file	line:1
+pandas_Statistics.py	../Method/pandas_Statistics.py	1;"	kind:file	line:1
+pandas_Viewing_inspecting Data.py	../Method/pandas_Viewing_inspecting Data.py	1;"	kind:file	line:1
+pandas_pivot_table.py	../Method/pandas_pivot_table.py	1;"	kind:file	line:1
+pd	../Method/pandas_Creato_Objects.py	/^import pandas as pd$/;"	kind:namespace	line:5
+pd	../Method/pandas_Date Cleaning.py	/^import pandas as pd$/;"	kind:namespace	line:8
+pd	../Method/pandas_Importing_Exporting Data.py	/^import pandas as pd$/;"	kind:namespace	line:5
+pd	../Method/pandas_Index_Method.py	/^import pandas as pd$/;"	kind:namespace	line:5
+pd	../Method/pandas_Join_Combine.py	/^import pandas as pd$/;"	kind:namespace	line:4
+pd	../Method/pandas_Selection_Fliter_Sort_Groupby.py	/^import pandas as pd$/;"	kind:namespace	line:3
+pd	../Method/pandas_Statistics.py	/^import pandas as pd$/;"	kind:namespace	line:5
+pd	../Method/pandas_Viewing_inspecting Data.py	/^import pandas as pd$/;"	kind:namespace	line:5
+pd	../Method/pandas_pivot_table.py	/^import pandas as pd$/;"	kind:namespace	line:4
+pd	../Object/pandas_Object_DataFrame.py	/^import pandas as pd$/;"	kind:namespace	line:3
+ss	../Method/pandas_Viewing_inspecting Data.py	/^from scipy import stats as ss$/;"	kind:namespace	line:6
+table	../Method/pandas_pivot_table.py	/^table = pd.pivot_table(df,index=['A', 'B'], columns=['C'], values='D')$/;"	kind:variable	line:16

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>处理数据清洗</title>
+<script src="/greenpassapp/static/public/plugIn/jquery-1.6.4.min.js"></script>
+<script src="/greenpassapp/static/public/plugIn/jquery.fancybox.pack.js"></script>
+</head>
+<body>
+	<h1>Hello World</h1>
+	<h1>数据清洗</h1>
+	<button id="btn7" style="width: 120px; height: 40px;" onclick="dtlData7()" value="Redis数据">测试获取Redis数据</button>
+	
+</body>
+<script type="text/javascript">
+	 window.onload = function(){
+		
+		 dtlData8 = function(){
+				console.log(8);
+				var self= this;
+				var postData = {
+					"verifyCode" : "5",
+					"regNo":"pqrs"
+				};
+				$.ajax({
+					type:'POST',
+					url:'/greenpassapp/app/shopConvert/covertShop.json',   
+					data:postData,
+					dataType:"json",
+					cache : false,
+					success: function (result) {
+					}	
+				});
+			}
+			
+	} 
+
+
+
+</script>
+
+
+</html>

@@ -1,0 +1,26 @@
+2017-06-14 16:52:47,761 [http-bio-8080-exec-1] c.c.w.s.l.LicenceFeatureInterceptor [Slf4jLogger.java:27] allowed method ==> public java.util.Map com.cdsf.app.login.AppLoginController.queryUser(java.util.Map) throws java.lang.Exception
+2017-06-14 16:52:47,790 [http-bio-8080-exec-1] c.c.w.s.l.LicenceFeatureInterceptor [Slf4jLogger.java:27] allowed method ==> public com.cdsf.app.user.domain.User com.cdsf.app.login.service.AppLoginServiceImpl.queryUser(java.util.Map) throws java.lang.Exception
+2017-06-14 16:52:47,790 [http-bio-8080-exec-1] o.m.s.SqlSessionUtils [SqlSessionUtils.java:104] Creating a new SqlSession
+2017-06-14 16:52:47,791 [http-bio-8080-exec-1] o.m.s.SqlSessionUtils [SqlSessionUtils.java:120] Registering transaction synchronization for SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7b552058]
+2017-06-14 16:52:47,823 [http-bio-8080-exec-1] o.m.s.SqlSessionUtils [SqlSessionUtils.java:163] Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7b552058]
+2017-06-14 16:52:47,823 [http-bio-8080-exec-1] o.m.s.SqlSessionUtils [SqlSessionUtils.java:261] Transaction synchronization committing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7b552058]
+2017-06-14 16:52:47,823 [http-bio-8080-exec-1] o.m.s.SqlSessionUtils [SqlSessionUtils.java:287] Transaction synchronization deregistering SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7b552058]
+2017-06-14 16:52:47,824 [http-bio-8080-exec-1] o.m.s.SqlSessionUtils [SqlSessionUtils.java:292] Transaction synchronization closing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7b552058]
+2017-06-14 16:52:50,808 [http-bio-8080-exec-4] c.c.w.s.l.LicenceFeatureInterceptor [Slf4jLogger.java:27] allowed method ==> public java.util.Map com.cdsf.greenpassdriver.GreenPassDriverController.getCargoTreeData() throws java.lang.Exception
+2017-06-14 16:52:50,812 [http-bio-8080-exec-4] c.c.w.s.l.LicenceFeatureInterceptor [Slf4jLogger.java:27] allowed method ==> public java.util.List com.cdsf.greenpassdriver.service.GreenPassDriverServiceImpl.getCargoTreeData()
+2017-06-14 16:52:50,812 [http-bio-8080-exec-4] o.m.s.SqlSessionUtils [SqlSessionUtils.java:104] Creating a new SqlSession
+2017-06-14 16:52:50,813 [http-bio-8080-exec-4] o.m.s.SqlSessionUtils [SqlSessionUtils.java:120] Registering transaction synchronization for SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@9187097]
+2017-06-14 16:52:50,821 [http-bio-8080-exec-4] o.m.s.SqlSessionUtils [SqlSessionUtils.java:163] Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@9187097]
+2017-06-14 16:52:50,822 [http-bio-8080-exec-4] o.m.s.SqlSessionUtils [SqlSessionUtils.java:261] Transaction synchronization committing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@9187097]
+2017-06-14 16:52:50,822 [http-bio-8080-exec-4] o.m.s.SqlSessionUtils [SqlSessionUtils.java:287] Transaction synchronization deregistering SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@9187097]
+2017-06-14 16:52:50,822 [http-bio-8080-exec-4] o.m.s.SqlSessionUtils [SqlSessionUtils.java:292] Transaction synchronization closing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@9187097]
+2017-06-14 16:52:55,518 [http-bio-8080-exec-4] c.c.w.s.l.LicenceFeatureInterceptor [Slf4jLogger.java:27] allowed method ==> public java.util.Map com.cdsf.app.worker.WorkerController.waybill(java.util.Map)
+2017-06-14 16:52:55,521 [http-bio-8080-exec-4] c.c.w.s.l.LicenceFeatureInterceptor [Slf4jLogger.java:27] allowed method ==> public com.cdsf.greenpassdriver.domain.WayBill com.cdsf.app.worker.service.WorkerServiceImpl.waybill(java.util.Map) throws java.lang.Exception
+2017-06-14 16:52:55,522 [http-bio-8080-exec-4] o.m.s.SqlSessionUtils [SqlSessionUtils.java:104] Creating a new SqlSession
+2017-06-14 16:52:55,523 [http-bio-8080-exec-4] o.m.s.SqlSessionUtils [SqlSessionUtils.java:120] Registering transaction synchronization for SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1893e502]
+2017-06-14 16:52:55,527 [http-bio-8080-exec-4] o.m.s.SqlSessionUtils [SqlSessionUtils.java:163] Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1893e502]
+2017-06-14 16:52:55,527 [http-bio-8080-exec-4] o.m.s.SqlSessionUtils [SqlSessionUtils.java:97] Fetched SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1893e502] from current transaction
+2017-06-14 16:52:55,559 [http-bio-8080-exec-4] o.m.s.SqlSessionUtils [SqlSessionUtils.java:163] Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1893e502]
+2017-06-14 16:52:55,560 [http-bio-8080-exec-4] o.m.s.SqlSessionUtils [SqlSessionUtils.java:261] Transaction synchronization committing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1893e502]
+2017-06-14 16:52:55,560 [http-bio-8080-exec-4] o.m.s.SqlSessionUtils [SqlSessionUtils.java:287] Transaction synchronization deregistering SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1893e502]
+2017-06-14 16:52:55,560 [http-bio-8080-exec-4] o.m.s.SqlSessionUtils [SqlSessionUtils.java:292] Transaction synchronization closing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1893e502]

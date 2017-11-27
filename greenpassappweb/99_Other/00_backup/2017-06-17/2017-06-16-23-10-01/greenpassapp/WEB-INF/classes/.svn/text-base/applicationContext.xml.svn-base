@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://dev.cdsf.com/schema/webmvc 
+           http://dev.cdsf.com/schema/webmvc.xsd
+           http://drools.org/schema/drools-spring
+           http://drools.org/schema/drools-spring.xsd">
+	<configuration xmlns="http://dev.cdsf.com/schema/webmvc" 
+		base-packages="com.cdsf.app,com.cdsf.common,com.cdsf.greenpassdriver">
+		<repository dialect="MYSQL">
+			<datasource>
+				<user>${jdbc.user}</user>
+				<password>${jdbc.password}</password>
+				<url>${jdbc.url}</url>
+				<driver-class>${jdbc.driverClassName}</driver-class>
+				<initial-size>5</initial-size>
+				<max-active>100</max-active>
+				<validation-query>select 1</validation-query>
+			</datasource>
+			<plugins>
+				<escape />
+				<paginator />
+				<mapresult />
+				<multisql />
+			</plugins>
+		</repository>
+		<!-- Spring Security 权限控制配置 -->
+		<!-- <security user-interface="com.cdsf.common.GrantedUser">
+			<cas server-url="${cas.server}" client-url="${cas.client}" /> 
+
+			<form />
+
+		</security> -->
+		<web />
+	</configuration>
+	<!--
+	<bean id="redisCache" class="com.cdsf.shopConvert.RedisCache">
+		<property name="hostName" value="10.0.4.56"></property>
+		<property name="port" value="6379"></property>
+		<property name="password" value="1234"></property>
+	</bean>
+	 -->
+	 
+	 
+	 <bean id="initProcess"  lazy-init = "false"  class="com.cdsf.greenpassdriver.InitProcess"  init-method="init">
+	 	
+	 
+	 </bean>
+	 
+</beans>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="worker.WorkerMapper">
+	<select id="list" resultType="worker.WorkWayBill">
+		SELECT 
+			u.job_num AS checkJobNum,
+			u.login_name AS workLoginName,
+			u.user_name AS workTrueName, 
+			ac.conclusion_content,
+			ac.receivables,
+			ac.punishableAccount,
+			w.* 
+		FROM 
+			t_waybill w
+		LEFT JOIN t_user u ON u.id=w.current_auditor_id
+		LEFT JOIN t_audit_conclusion ac ON ac.flow_id=w.audit_conclusion_flowId
+		WHERE 
+			w.green_truck_plate=#{truckPlate}
+		AND w.audit_conclusion_status= CAST(#{auditConclusionStatus} as DECIMAL)
+		 ORDER BY audit_time DESC
+	</select>
+	<select id="queryWaybill" resultType="com.cdsf.greenpassdriver.domain.WayBill">
+		SELECT
+			*
+		FROM
+			t_waybill
+		WHERE
+			green_truck_plate = #{truckPlate}
+		AND current_status = #{currentStatus}
+		AND create_time = (
+			SELECT
+				MAX(create_time)
+			FROM
+				t_waybill
+			WHERE
+				green_truck_plate = #{truckPlate}
+			AND current_status = #{currentStatus}
+		)
+	</select>
+	
+	<select id="countOldWaybill" resultType="worker.AuditConclusionStatusCount">
+	SELECT
+		audit_conclusion_status,
+		count(1) AS count
+	FROM
+		t_waybill
+	WHERE
+		green_truck_plate=#{truckPlate}
+	AND current_status != 0
+	GROUP BY
+		audit_conclusion_status
+	</select>
+
+</mapper>

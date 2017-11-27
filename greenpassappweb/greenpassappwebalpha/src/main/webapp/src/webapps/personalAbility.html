@@ -1,0 +1,248 @@
+<div id="InspectionReview">
+
+	<style type="text/css">
+		.btn{width:50px;height:36px;line-height:17px;font-size:17px;}
+		.btn{width:50px;height:36px;line-height:17px;font-size:17px;}
+		.wrapper { display: grid; 
+		grid-template-columns: 150px 10px 600px 10px 600px 10px 600px; 
+		grid-template-rows: 400px 10px 400px 10px 400px 10px 400px 10px 400px; } 
+		
+
+		.a { grid-area: 1 / 1 / 2 / 2; } 
+		.b { grid-area: 1 / 3 / 2 / 4; } 
+		.c { grid-area: 1 / 5 / 2 / 6; } 
+		.d { grid-area: 1 / 7 / 2 / 8; } 
+
+		.e { grid-area: 3 / 1 / 4 / 2; } 
+		.f { grid-area: 3 / 3 / 4 / 4; } 
+		.g { grid-area: 3 / 5 / 4 / 6; } 
+		.h { grid-area: 3 / 7 / 4 / 8; } 
+
+		.i { grid-area: 5 / 1 / 6 / 2; } 
+		.j { grid-area: 5 / 3 / 6 / 4; }
+		.k { grid-area: 5 / 5 / 6 / 6; }
+		.l { grid-area: 5 / 7 / 6 / 8; }
+
+		.m { grid-area: 7 / 1 / 8 / 2; }
+		.n { grid-area: 7 / 3 / 8 / 4; }
+		.o { grid-area: 7 / 5 / 8 / 6; }
+		.p { grid-area: 7 / 7 / 8 / 8; }
+
+		.q { grid-area: 9 / 1 / 10 / 2; }
+		.r { grid-area: 9 / 3 / 10 / 4; }
+		.s { grid-area: 9 / 5 / 10 / 6; }
+		.t { grid-area: 9 / 7 / 10 / 8; }
+		
+		.u { grid-area: 11 / 1 / 12 / 2; }
+		.v { grid-area: 11 / 3 / 12 / 4; }
+		.w { grid-area: 11 / 5 / 12 / 6; }
+		.x { grid-area: 11 / 7 / 12 / 8; }
+
+	</style>
+
+	<h3>路公司稽查</h3>
+	<div class="subScroll" style="width: 100%;height: 100%;">
+		<div class="wrapper"> 
+			<div class="box a">
+				<b>评价分数：80 分</b>
+			</div>
+			<div class="box b" id="assess1">B</div>
+			<div class="box c">
+				<select name="选择月份"> 
+					<option value="0">1月</option> 
+					<option value="1">2月</option>
+					<option value="3">3月</option> 
+					<option value="4">4月</option>
+					<option value="5">5月</option> 
+					<option value="6">6月</option> 
+					<option value="7">7月</option> 
+					<option value="8">8月</option>
+					<option value="9">9月</option>
+					<option value="10">10月</option>
+					<option value="11">11月</option>
+					<option value="12">12月</option>
+				</select>
+				<input name="月份查询" class="btn" type="button" value="查询"/> 
+			</div>
+			<div class="box d"></div>
+			<div class="box e"><b>评价分数：78 分</b></div>
+			<div class="box f" id="assess2"></div> 
+			<div class="box g"></div>
+			<div class="box h"></div>
+			<div class="box i"><b>评价分数：90 分</b></div>
+			<div class="box j" id="assess3"></div> 
+			<div class="box k"></div>
+			<div class="box l"></div>
+			<div class="box m"><b>评价分数：95 分</b></div>
+			<div class="box n" id="assess4"></div>  
+		</div>	
+	</div>
+	
+</div>
+<script rel="script">
+	define(function(require){
+		require("driverEvaluate/js/echarts.min.js");
+		require("driverEvaluate/js/china.js");
+		var base=require("Base");
+
+		return base.extend({
+			onInit: function(){
+				this.buildCharts();
+				$(".subScroll").loadScroll();
+			},
+			buildCharts: function(){
+		// 基于准备好的dom，初始化echarts实例
+				var assess1 = echarts.init(document.getElementById('assess1'));
+				var assess2 = echarts.init(document.getElementById('assess2'));
+				var assess3 = echarts.init(document.getElementById('assess3'));
+				var assess4 = echarts.init(document.getElementById('assess4'));
+
+				// 人员能力评价
+				var option1 = {
+						title: {
+							text: ''
+						},
+						tooltip: {},
+						legend: {
+							data: ['平均能力', '孙钊']
+						},
+						radar: {
+							// shape: 'circle',
+							indicator: [
+							{ name: '稽查金额', max: 6500},
+							{ name: '抓逃次数', max: 30000},
+							{ name: '工作时长', max: 52000},
+							{ name: '稽查次数', max: 5000},
+							]
+						},
+						series: [{
+							name: '平均能力 vs 孙钊（Budget vs spending）',
+							type: 'radar',
+							// areaStyle: {normal: {}},
+							data : [
+								{
+									value : [4300, 28000, 35000,4000],
+									name : '平均能力'
+								},
+								{
+									value : [5000, 28000, 31000,3000],
+									name : '孙钊'
+								}
+							]
+						}]
+					}
+					
+				var option2 = {
+						title: {
+							text: ''
+						},
+						tooltip: {},
+						legend: {
+							data: ['平均能力', '孙钊']
+						},
+						radar: {
+							// shape: 'circle',
+							indicator: [
+							{ name: '稽查金额', max: 6500},
+							{ name: '抓逃次数', max: 30000},
+							{ name: '工作时长', max: 52000},
+							{ name: '稽查次数', max: 5000},
+							]
+						},
+						series: [{
+							name: '平均能力 vs 孙钊（Budget vs spending）',
+							type: 'radar',
+							// areaStyle: {normal: {}},
+							data : [
+								{
+									value : [4300, 28000, 35000,4000],
+									name : '平均能力'
+								},
+								{
+									value : [5000, 28000, 31000,3000],
+									name : '孙钊'
+								}
+							]
+						}]
+					}
+
+					var option3 = {
+						title: {
+							text: ''
+						},
+						tooltip: {},
+						legend: {
+							data: ['平均能力', '孙钊']
+						},
+						radar: {
+							// shape: 'circle',
+							indicator: [
+							{ name: '稽查金额', max: 6500},
+							{ name: '抓逃次数', max: 30000},
+							{ name: '工作时长', max: 52000},
+							{ name: '稽查次数', max: 5000},
+							]
+						},
+						series: [{
+							name: '平均能力 vs 孙钊（Budget vs spending）',
+							type: 'radar',
+							// areaStyle: {normal: {}},
+							data : [
+								{
+									value : [4300, 28000, 35000,4000],
+									name : '平均能力'
+								},
+								{
+									value : [5000, 28000, 31000,3000],
+									name : '孙钊'
+								}
+							]
+						}]
+					}
+
+					var option4 = {
+						title: {
+							text: ''
+						},
+						tooltip: {},
+						legend: {
+							data: ['平均能力', '孙钊']
+						},
+						radar: {
+							// shape: 'circle',
+							indicator: [
+							{ name: '稽查金额', max: 6500},
+							{ name: '抓逃次数', max: 30000},
+							{ name: '工作时长', max: 52000},
+							{ name: '稽查次数', max: 5000},
+							]
+						},
+						series: [{
+							name: '平均能力 vs 孙钊（Budget vs spending）',
+							type: 'radar',
+							// areaStyle: {normal: {}},
+							data : [
+								{
+									value : [4300, 28000, 35000,4000],
+									name : '平均能力'
+								},
+								{
+									value : [5000, 28000, 31000,3000],
+									name : '孙钊'
+								}
+							]
+						}]
+					}
+
+				// 使用刚指定的配置项和数据显示图表。
+				assess1.setOption(option1);
+				assess2.setOption(option2);
+				assess3.setOption(option3);
+				assess4.setOption(option4);
+
+			}
+		})
+
+	})
+
+</script>

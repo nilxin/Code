@@ -1,0 +1,175 @@
+
+<div id="InspectionReview">
+	<h3>驾驶人员评价</h3>
+		
+	<!-- 添加辛凯代码 -->
+	<div class="subScroll sub_container" style="width: 100%;height: 100%;">
+		
+		<div class="search d1">
+		  <form>
+		  <input class="btn-value" type="text" placeholder="请输入驾驶证件号...">
+		  <button class="btn-search" type="button"></button>
+		  </form>
+		</div>
+		<div align="center"><div style="width: 50%;height:450px;float: left;margin-top: 35px;" id="randomScrore"></div></div>
+		<div align="center"><div style="width: 50%;height:450px;float: left;" id="personal"></div></div>
+	</div>
+</div>
+
+<script rel="script">
+	define(function(require){
+		
+		require("driverEvaluate/css/normalize.css");
+		require("driverEvaluate/css/font-awesome.min.css");
+		require("driverEvaluate/css/demo.css");
+		require("driverEvaluate/css/style.css");
+		var base=require("Base");
+
+		return base.extend({
+			onInit: function(){
+				this.buildGauge();
+				this.buildRadar();
+				this.getRadarData();
+				$(".subScroll").loadScroll();
+			},
+			buildRadar: function(){
+				this.radar = echarts.init(document.getElementById('personal'));//绿通车各站点排名
+
+				// 驾驶行为评价
+				var option1 = {
+					// title: {
+					// 	text: '驾驶人员身份评价',
+					// 	 x: 'center', 
+					// },
+					textStyle: {       
+						color: 'black'
+		            },
+					tooltip: {},
+					radar: {
+						// shape: 'circle',
+						indicator: [
+						{ name: '身份认证', max: 5},
+						{ name: '车辆驾驶习惯', max: 5},
+						{ name: '偷逃通行费', max: 5},
+						{ name: '人群特质', max: 5},
+						{ name: '个人信息', max: 5},
+						]
+					},
+					series: [{
+						name: '驾驶人员能力',
+						type: 'radar',
+						// areaStyle: {normal: {}},
+						data : [
+							{
+								value : [3,4,4,2,2],
+								name : '平均能力'
+							},
+							{
+								value : [5,3,4,2,5],
+								name : ''
+							}
+						]
+					}]
+				}
+
+		        // 使用刚指定的配置项和数据显示图表
+		        this.radar.clear();
+		        this.radar.setOption(option1);
+			},
+			// 获取雷达图数据并set到echart
+			getRadarData: function(){
+				var self=this;
+				var competence=[];
+				// 查询按钮绑定事件
+				$(".btn-search").on("click",function(){
+					var value=$(".btn-value").val();
+					if(value.length==18 && typeof parseInt(value)=="number"){
+						S.request({
+							url:"",
+							data:value,
+							success: function(data){
+								if(data.radarData!=0){
+									data.radarData.forEach(function(i,v){
+										//将返回数据添加到competence数组
+									})
+								}
+							}
+						})
+						// 将数据set到echart上
+						self.radar.setOption({
+							series: [{
+								name: '驾驶人员能力',
+								type: 'radar',
+								// areaStyle: {normal: {}},
+								data : [
+									{
+										value : [3,4,4,2,2],
+										name : '平均能力'
+									},
+									{
+										value : competence,
+										name : ''
+									}
+								]
+							}]
+						})
+					}else{
+						$.zAlert("请输入18位正确的身份证号码","fail");
+					}
+
+				})
+				
+			},
+			buildGauge: function(){
+				var gauge = echarts.init(document.getElementById('randomScrore'));//随机分数
+
+				// 驾驶人员随机分数
+				var option = {
+				    tooltip : {
+				        formatter: "{a} <br/>{b} : {c}"
+				    },
+				    series: [
+				        {
+				            name: '信用分数',
+				            type: 'gauge',
+				            startAngle:'210',
+            				endAngle: '-30',
+				            detail: {formatter:'{value}'},
+				            data: [{value: 50, name: ''}],
+				            pointer:{
+				                show:true,
+				                length: '35%',
+				                width: 4
+				            },
+				            radius:'85%'
+				            
+				        }
+				    ]
+				};
+
+				// setInterval(function () {
+				    var score = (Math.random() * 100).toFixed(2) - 0;
+				    var name="";
+				    if(score<=20){
+				    	name='信用极差';
+				    }else if(score>20&&score<=40){
+				    	name='信用差';
+				    }else if(score>40&&score<=60){
+				    	name="信用一般";
+				    }else if(score>60&&score<=80){
+				    	name="信用良好";
+				    }else{
+				    	name="信用极好";
+				    }
+				    option.series[0].data[0].value=score;
+				    option.series[0].data[0].name=name;
+				    gauge.setOption(option, true);
+				// },2000);
+
+			}
+
+		})
+
+
+	})
+</script>

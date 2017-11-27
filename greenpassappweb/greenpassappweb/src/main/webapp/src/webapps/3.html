@@ -1,0 +1,261 @@
+<div id="blacklist">
+	<h3>黑灰名单</h3>
+	<!-- 黑灰名单条件 -->
+	<div class="checkTime clearfix">
+		<div class="checkTime_box fl">
+			<span>
+				<input type="text" placeholder="开始时间" name="startTime" id="startTime" class="Wdate startTime" onFocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'endTime\')||\'%y-%M-{%d-1}\'}'})">
+			</span>
+			<span class="timeTo">至</span>
+			<span>
+				<input type="text" placeholder="结束时间" name="endTime" id="endTime" class="Wdate endTime" onFocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'startTime\')}',maxDate:'%y-%M'})">
+			</span>
+		</div>
+		<div class="checkTime_btn fl">
+			<!-- <span class="siteBox">
+				<select name="" id="site">
+					<option value="成都站">成都站</option>
+					<option value="雅安站">雅安站</option>
+					<option value="新津站">新津站</option>
+				</select>
+			</span> -->
+			<span class="statistics">统&nbsp;计</span>
+		</div>
+		<div class="pagingBox">
+			<div><a class="prevBtn">上一页</a>当前第<span class="nowPage">10</span>页\共<span class="totalPage">20</span>页<a class="nextBtn">下一页</a></div>
+		</div>
+	</div>
+	<!-- 黑灰名单表格展示 -->
+	<div class="tableBox">
+		<div class="table_head clearfix">
+			<span class="w33">车牌号</span>
+			<span class="w33">违规次数</span>
+			<span class="w33">累计违规金额</span>
+		</div>
+		<div id="table_body_box_black" class="table_body_box">
+			<ul class="table_body">
+				
+			</ul>
+		</div>
+	</div>
+</div>
+<script rel="script">
+    define(function(require){
+        var base = require("Base"),
+        	defaultPageIndex =1,
+        	defaultPageRows=10,
+        	_self,
+        	totalPage,
+        	totalRows; 
+        return base.extend({
+			onInit : function(options){
+				_self = this;
+				_self.statisticsClick();//统计按钮  点击事件
+				_self.clickpagingBtn();//上一页 下一页
+
+				// 绘制数据
+				var	drawData = function(default_pageIndex,default_pageRows){
+				var requestOption = {};
+				requestOption.data = {
+						"page.index":default_pageIndex,
+						"page.rows":default_pageRows
+					};
+				requestOption.url = "/greenpassappweb/app/webstatistics/blackgraylist.json";
+				requestOption.success = function(data){
+					//循环填充数据
+					var _data = data.data;
+					if(_data.status != 0){
+						var $ul = $(".table_body");
+						var dataContent = _data.content;
+						totalRows = dataContent.total;
+						if(Math.ceil(totalRows/default_pageRows) <= 0){
+							totalPage = 1;
+						}else{
+							totalPage = Math.ceil(totalRows/default_pageRows);
+						}
+						console.log(totalPage);
+						$(".totalPage").html(totalPage);
+						var data_list = dataContent.list;
+						
+						for(var i=0,len=data_list.length;i<len;i++){
+							var node = $("<li class='reviewData clearfix'></li>");
+							var $turckPlate = $("<span class='w33'>"+data_list[i].truckPlate+"</span>");
+							var illegalTimes = 0;
+							if(data_list[i].illegalTimes){
+								illegalTimes = data_list[i].illegalTimes;
+							}
+							var $illegalTimes = $("<span class='w33'>"+illegalTimes+"</span>");
+							var illegalMoney = 0;
+							if(data_list[i].illegalMoney){
+								illegalMoney = data_list[i].illegalMoney;
+							}
+							var $illegalMoney = $("<span class='w33'>"+illegalMoney+"</span>");
+							node.append($turckPlate);
+							node.append($illegalTimes);
+							node.append($illegalMoney);
+							//cloneNode = node.clone(true);
+							$(".table_body").append(node);
+						}
+						//$(".table_body").append(cloneNode);
+					}else{
+						alert(_data.message);
+					}
+				}
+					requestOption.error = function(e){
+					console.log("后台数据接口出错!");
+				}
+					S.request(requestOption);
+				};
+
+				//初始化的时候设置当前页为第一页,计算获取总页数
+				$(".nowPage").html(1);
+				$(".totalPage").html(1);
+				var default_pageIndex = 1;
+				var default_pageRows = 10;
+				drawData(default_pageIndex,default_pageRows);
+
+
+				$('#table_body_box_black').mCustomScrollbar({//初始化表格滚动条
+					mouseWheelPixels:80,
+					scrollButtons:{
+						enable:false,
+						scrollType:"continuous",
+						scrollSpeed:20,
+						scrollAmount:40
+					},
+				 	horizontalScroll:false,
+				});
+			},
+			//统计按钮  点击事件
+			statisticsClick : function(){
+				// var startTime,endTime,site;
+				$("#container").off('click','.statistics').on('click','.statistics',function(){
+					// startTime = $("#startTime").val();
+					// endTime = $("#endTime").val();
+
+					var startTime = $("#startTime").val();
+					var endTime = $("#endTime").val();
+					// var nowPageNum = parseInt($(".nowPage").html(), 10);
+					$(".table_body").empty();
+					//清空后每次统计查询都是第一页了
+					var nowPageNum = 1;
+					$(".nowPage").html(nowPageNum);
+					if(S.isEmpty(startTime)){
+						startTime = null;
+					}
+					if(S.isEmpty(endTime)){
+						endTime = null;
+					}
+					_self.drawData(nowPageNum,defaultPageRows,startTime,endTime);
+				});
+			},
+
+			//翻页时填充数据并绘制DOM
+			drawData : function(default_pageIndex,default_pageRows,startTime,endTime){
+				var requestOption = {};
+				requestOption.data = {
+						"page.index":default_pageIndex,
+						"page.rows":default_pageRows,
+						"startTime":startTime,
+						"endTime":endTime
+					};
+				requestOption.url = "/greenpassappweb/app/webstatistics/blackgraylist.json";
+				requestOption.success = function(data){
+					//循环填充数据
+					var _data = data.data;
+					if(_data.status != 0){
+						var $ul = $(".table_body");
+						var dataContent = _data.content;
+						totalRows = dataContent.total;
+						if(Math.ceil(totalRows/default_pageRows) <= 0){
+							totalPage = 1;
+						}else{
+							totalPage = Math.ceil(totalRows/default_pageRows);
+						}
+						$(".totalPage").html(totalPage);
+						var data_list = dataContent.list;
+						var node = $("<li class='reviewData clearfix'></li>");
+						var cloneNode;
+						$(".totalPage").html(totalPage);
+						var data_list = dataContent.list;
+						// var node = $("<li class='reviewData clearfix'></li>");
+						// var cloneNode;
+						for(var i=0,len=data_list.length;i<len;i++){
+							var node = $("<li class='reviewData clearfix'></li>");
+							var $turckPlate = $("<span class='w33'>"+data_list[i].truckPlate+"</span>");
+							var illegalTimes = 0;
+							if(data_list[i].illegalTimes){
+								illegalTimes = data_list[i].illegalTimes;
+							}
+							var $illegalTimes = $("<span class='w33'>"+illegalTimes+"</span>");
+							var illegalMoney = 0;
+							if(data_list[i].illegalMoney){
+								illegalMoney = data_list[i].illegalMoney;
+							}
+							var $illegalMoney = $("<span class='w33'>"+illegalMoney+"</span>");
+							node.append($turckPlate);
+							node.append($illegalTimes);
+							node.append($illegalMoney);
+							// cloneNode = node.clone(true);
+							$(".table_body").append(node);
+						}
+						// $(".table_body").append(cloneNode);
+					}else{
+						alert(_data.message);
+					}
+				}
+				requestOption.error = function(e){
+					console.log("后台数据接口出错!");
+				}
+				S.request(requestOption);
+			},
+
+			//上一页 下一页
+			clickpagingBtn : function(){
+				$("#container").off('click','.prevBtn').on('click','.prevBtn',function(){
+					var nowPageNum = parseInt($(".nowPage").html(), 10);
+					if (nowPageNum <= 1){
+						$.zAlert("已经是第一页");
+						return;
+					}
+					$(".nowPage").html(--nowPageNum);
+					//数据填充   清空DOM 重新绘制
+					$(".table_body").empty();
+					var startTime = $("#startTime").val();
+					var endTime = $("#endTime").val();
+					var nowPageNum = parseInt($(".nowPage").html(), 10);
+					$(".table_body").empty();
+					if(S.isEmpty(startTime)){
+						startTime = null;
+					}
+					if(S.isEmpty(endTime)){
+						endTime = null;
+					}
+					_self.drawData(nowPageNum,defaultPageRows,startTime,endTime);
+				});
+				$("#container").off('click','.nextBtn').on('click','.nextBtn',function(){
+					var nowPageNum = parseInt($(".nowPage").html(), 10);
+					var totalNum = parseInt($(".totalPage").html(), 10);
+					if (nowPageNum >= totalNum){
+						$.zAlert("已经是最后一页");
+						return;
+					}
+					$(".nowPage").html(++nowPageNum);
+					//数据填充   清空DOM 重新绘制
+					$(".table_body").empty();
+					var startTime = $("#startTime").val();
+					var endTime = $("#endTime").val();
+					var nowPageNum = parseInt($(".nowPage").html(), 10);
+					$(".table_body").empty();
+					if(S.isEmpty(startTime)){
+						startTime = null;
+					}
+					if(S.isEmpty(endTime)){
+						endTime = null;
+					}
+					_self.drawData(nowPageNum,defaultPageRows,startTime,endTime);
+				});
+			} 
+		})
+	})
+</script>

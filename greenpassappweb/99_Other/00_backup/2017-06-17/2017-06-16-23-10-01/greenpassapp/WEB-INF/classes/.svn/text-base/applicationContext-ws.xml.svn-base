@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://cxf.apache.org/jaxws
+            http://cxf.apache.org/schemas/jaxws.xsd">
+	<!-- ############## publishers ##################  -->
+	<!-- <bean id="LimsWebServiceBean" class="com.cdsf.lims.api.service.LimsWebServiceImpl" />
+	<jaxws:server address="/LimsWebService" serviceClass="com.cdsf.lims.api.LimsWebService"
+		serviceBean="#LimsWebServiceBean" />
+
+	############## consumers ###################
+	
+	<jaxws:client id="BasicWebService" serviceClass="com.cdsf.basicmanage.api.BasicmanageService"
+		address="${sys.basicSystemURL}/public/ws/BasicWebService" />
+		
+		
+		############## consumers ###################
+	<jaxws:client id="bpmService" serviceClass="com.cdsf.bpm.weservice.BpmService" 
+		address="${sys.bpmSystemURL}/services/bpmService" />  -->
+</beans>

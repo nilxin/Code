@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scanPeriod="10 seconds">
+	<appender name="FILE_ERROR"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${basedir}/logs/error.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${basedir}/logs/pack/%d{yyyy-MM-dd}.log</FileNamePattern>
+		</rollingPolicy>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>DEBUG</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+		<encoder>
+			<pattern>%date [%thread] %logger{10} [%file:%line] %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+	
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>[%d{yyyy-MM-dd HH:mm:ss}][%thread] - %msg%n</pattern>
+		</encoder>
+	</appender>
+	
+	<logger name="com.cdsf.lims" level="DEBUG">
+	<appender-ref ref="FILE_ERROR" />
+	</logger>
+	<logger name="com.cdsf.webmvc" level="DEBUG">
+	<appender-ref ref="FILE_ERROR" />
+	</logger>
+	<logger name="org.mybatis.spring.SqlSessionUtils" level="DEBUG">
+	<appender-ref ref="FILE_ERROR" />
+	</logger>
+	<logger name="test" level="ERROR"/>
+	
+	<root level="DEBUG">
+		<appender-ref ref="STDOUT" />
+<!-- 		<appender-ref ref="FILE_ERROR" /> -->
+	</root>
+</configuration> 

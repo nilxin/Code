@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="worker.CargoTreeMapper">
+	<select id="findByIdList" resultType="worker.CargoTree">
+		SELECT * FROM t_cargo_tree WHERE id IN 
+		<foreach collection="list" item="id" open="(" close=")" separator=",">
+			#{id}
+		</foreach>
+	</select>
+	<!--  根据二级主键查询一级 -->
+	<select id="findFirstList" resultType="worker.CargoTree">
+		SELECT * FROM t_cargo_tree WHERE id IN
+		(
+			SELECT parent_id FROM t_cargo_tree WHERE id IN 
+			<foreach collection="list" item="id" open="(" close=")" separator=",">
+				#{id}
+			</foreach>
+		)
+	</select>
+	<!-- 根据parentId查询，如果为null,就查询parentId=-1的 -->
+	<select id="cargoTreeList" resultType="worker.CargoTree">
+		SELECT 
+		 	CASE WHEN tc.parent_id=-1 
+		 		THEN true
+		    	ELSE false END hasChildren,
+		tc.* 
+		FROM t_cargo_tree tc WHERE 1=1
+		<if test="@T@hasText(parentId)">
+			AND tc.parent_id=#{parentId}
+	    </if>
+		<if test="@T@isEmpty(parentId)">
+			AND tc.parent_id=-1
+	    </if>
+	     ORDER BY tc.sort_key
+	</select>
+</mapper>

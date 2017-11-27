@@ -1,0 +1,230 @@
+<div id="siteTraffic">
+	<h3>站点通行统计</h3>
+	<div class="checkTime clearfix">
+		<div class="checkTime_box fl">
+			<span>
+				<input type="text" placeholder="开始时间" name="startTime" id="startTime" class="Wdate startTime" onFocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'endTime\')||\'%y-%M-{%d-1}\'}'})">
+			</span>
+			<span class="timeTo">至</span>
+			<span>
+				<input type="text" placeholder="结束时间" name="endTime" id="endTime" class="Wdate endTime" onFocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'startTime\')}',maxDate:'%y-%M'})">
+			</span>
+		</div>
+		<div class="checkTime_btn fl">
+			<span class="siteBox">
+				<select name="" id="auditStationId">
+					<option value="-1">--请选择--</option>
+					<option value="1">成都站</option>
+					<option value="2">雅安站</option>
+					<option value="3">南充站</option>
+				</select>
+			</span>
+			<span class="statistics">统&nbsp;计</span>
+		</div>
+		<div class="pagingBox">
+			<div><a class="prevBtn">上一页</a>当前第<span class="nowPage">10</span>页\共<span class="totalPage">20</span>页<a class="nextBtn">下一页</a></div>
+		</div>
+	</div>
+	<!-- 黑灰名单表格展示 -->
+	<div class="tableBox">
+		<div class="table_head clearfix">
+			<span class="w50">站点名称</span>
+			<span class="w50">绿通车通行次数</span>
+		</div>
+		<div id="table_body_box_siteTraffic" class="table_body_box">
+			<ul class="table_body">
+			
+			</ul>
+		</div>
+	</div>
+</div>
+<script rel="script">
+    define(function(require){
+        var base = require("Base"),
+        defaultPageIndex =1,
+    	defaultPageRows=4,
+    	_self,
+    	totalPage,
+    	totalRows;
+        
+        return base.extend({
+			onInit : function(options){
+				_self = this;
+				_self.statisticsClick();//统计按钮  点击事件
+				_self.clickpagingBtn();
+				
+				// 绘制数据
+				var	drawData = function(default_pageIndex,default_pageRows){
+				var requestOption = {};
+				requestOption.data = {
+						"page.index":default_pageIndex,
+						"page.rows":default_pageRows
+				};
+				requestOption.url = "/greenpassappwebalpha/app/webstatistics/auditstation2.json";
+				requestOption.success = function(data){
+					//循环填充数据
+					var _data = data.data;
+					if(_data.status != 0){
+						var $ul = $(".table_body");
+						var dataContent = _data.content;
+						totalRows = dataContent.total;
+						if(Math.ceil(totalRows/default_pageRows) <= 0){
+							totalPage = 1;
+						}else{
+							totalPage = Math.ceil(totalRows/default_pageRows);
+						}
+						console.log(totalPage);
+						$(".totalPage").html(totalPage);
+						
+						var data_list = dataContent.list;
+						var node = $("<li class='clearfix'></li>");
+						var cloneNode;
+							for(var i=0,len=data_list.length;i<len;i++){
+								if(data_list[i].stationId == "" || data_list[i].stationId == null || data_list[i].stationId == 'null' || data_list[i].stationId == undefined || data_list[i].stationId == 'undefined' ){
+									var $auditStation = $("<span class='w50'>成都站</span>");
+								}else if(data_list[i].stationId == 1){
+									var $auditStation = $("<span class='w50'>双流南站</span>");
+								}else if(data_list[i].stationId == 2){
+									var $auditStation = $("<span class='w50'>雅安站</span>");
+								}else if(data_list[i].stationId == 3){
+									var $auditStation = $("<span class='w50'>南充站</span>");
+								}
+								if(!data_list[i].totalNum){
+									var $totalNum = $("<span class='w50'>0</span>");
+								}else{
+									var $totalNum = $("<span class='w50'>"+data_list[i].totalNum+"</span>");
+								}
+								node.append($auditStation);
+								node.append($totalNum);
+								cloneNode = node.clone(true);
+							}
+							$(".table_body").append(cloneNode);
+						}else{
+							alert();
+						}
+					}
+						requestOption.error = function(e){
+						console.log("后台数据接口出错!");
+					}
+					S.request(requestOption);
+				};
+
+				//初始化的时候设置当前页为第一页,计算获取总页数
+				$(".nowPage").html(1);
+				$(".totalPage").html(1);
+				var default_pageIndex = 1;
+				var default_pageRows = 4;
+				drawData(default_pageIndex,default_pageRows);
+				
+				
+				
+				$('#table_body_box_siteTraffic').mCustomScrollbar({//初始化表格滚动条
+					mouseWheelPixels:80,
+					scrollButtons:{
+						enable:false,
+						scrollType:"continuous",
+						scrollSpeed:20,
+						scrollAmount:40
+					},
+				 	horizontalScroll:false,
+				});
+			},
+			//统计按钮  点击事件
+			statisticsClick : function(){
+				var startTime,endTime,site;
+				$("#container").off('click','.statistics').on('click','.statistics',function(){
+					startTime = $("#startTime").val();
+					endTime = $("#endTime").val();
+					site = $("#site").val();
+					if (!(startTime !== "" && endTime !== "" && site !== "")) return;
+						alert(startTime+"---"+endTime+"---"+site)
+				});
+			},
+			
+			drawData : function(default_pageIndex,default_pageRows,startTime,endTime,auditStation){
+				var requestOption = {};
+				requestOption.data = {
+						"page.index":default_pageIndex,
+						"page.rows":default_pageRows,
+						"startTime":startTime,
+						"endTime":endTime,
+						"auditStation":auditStation
+				};
+				requestOption.url = "/greenpassappwebalpha/app/webstatistics/auditstation2.json";
+				requestOption.success = function(data){
+					//循环填充数据
+					var _data = data.data;
+					if(_data.status != 0){
+						var $ul = $(".table_body");
+						var dataContent = _data.content;
+						totalRows = dataContent.total;
+						if(Math.ceil(totalRows/default_pageRows) <= 0){
+							totalPage = 1;
+						}else{
+							totalPage = Math.ceil(totalRows/default_pageRows);
+						}
+						console.log(totalPage);
+						$(".totalPage").html(totalPage);
+						
+						var data_list = dataContent.list;
+						var node = $("<li class='clearfix'></li>");
+						var cloneNode;
+							for(var i=0,len=data_list.length;i<len;i++){
+								if(data_list[i].stationId == "" || data_list[i].stationId == null || data_list[i].stationId == 'null' || data_list[i].stationId == undefined || data_list[i].stationId == 'undefined' ){
+									var $auditStation = $("<span class='w50'>成都站</span>");
+								}else if(data_list[i].stationId == 1){
+									var $auditStation = $("<span class='w50'>双流南站</span>");
+								}else if(data_list[i].stationId == 2){
+									var $auditStation = $("<span class='w50'>雅安站</span>");
+								}else if(data_list[i].stationId == 3){
+									var $auditStation = $("<span class='w50'>南充站</span>");
+								}
+								if(!data_list[i].totalNum){
+									var $totalNum = $("<span class='w50'>0</span>");
+								}else{
+									var $totalNum = $("<span class='w50'>"+data_list[i].totalNum+"</span>");
+								}
+								node.append($auditStation);
+								node.append($totalNum);
+								cloneNode = node.clone(true);
+							}
+							$(".table_body").append(cloneNode);
+						}else{
+							alert();
+						}
+					}
+						requestOption.error = function(e){
+						console.log("后台数据接口出错!");
+					}
+					S.request(requestOption);
+			},
+			
+			//上一页 下一页
+			clickpagingBtn : function(){
+				$("#container").off('click','.prevBtn').on('click','.prevBtn',function(){
+					var nowPageNum = parseInt($(".nowPage").html(), 10);
+					if (nowPageNum <= 1){
+						$.zAlert("已经是第一页");
+						return;
+					}
+					$(".nowPage").html(--nowPageNum);
+					//数据填充   清空DOM 重新绘制
+					$(".table_body").empty();
+					_self.drawData(nowPageNum,4);
+				});
+				$("#container").off('click','.nextBtn').on('click','.nextBtn',function(){
+					var nowPageNum = parseInt($(".nowPage").html(), 10);
+					var totalNum = parseInt($(".totalPage").html(), 10);
+					if (nowPageNum >= totalNum){
+						$.zAlert("已经是最后一页");
+						return;
+					}
+					$(".nowPage").html(++nowPageNum);
+					//数据填充   清空DOM 重新绘制
+					$(".table_body").empty();
+					_self.drawData(nowPageNum,4);
+				});
+			} 
+		})
+	})
+</script>
