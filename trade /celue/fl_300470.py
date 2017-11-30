@@ -17,21 +17,27 @@ class lianghua_trade_300470(object):
     
     def __init__(self):
 
-        # 获取基础数据
-        df = ts.get_hist_data('300470','2016-01-01','2016-12-31')
-        print df.index.values[0].encode("utf-8")
-        print datetime.datetime.strptime(df.index.values[0].encode("utf-8"),'%Y-%M-%D')
         # analysisDataFrame获取要分析的值，将数据机型切片，获取需要的列open、close、volume、price_change，并将数据切分为：
-        	# analysis_first 在01-01到03-31日，分析volume日平均量
-        	# analysis_secord 在04-01到07-04日，大于volume日均量、最大量的日期
-			# analysis_three 在07-05到-12-31日，大于中的最大量的日期
-        self.analysis_first = df.loc['2016-01-04':'2016-03-31',['open','close','volume','price_change']]
-        print 'analysis_first:%s\n' % (self.analysis_first)
+            
+        analysis_first = ts.get_hist_data('300470','2016-01-01','2016-03-31')
+        analysis_secord = ts.get_hist_data('300470','2016-04-01','2016-07-04')
+        analysis_three = ts.get_hist_data('300470','2016-07-05','2016-12-31')
+
+        self.analysis_first = analysis_first.loc[:,['open','close','volume','price_change']]
+        self.analysis_secord = analysis_secord.loc[:,['open','close','volume','price_change']]
+        self.analysis_three = analysis_three.loc[:,['open','close','volume','price_change']]
 
     #交易量分析
     def tradeVolume(self):
+        # analysis_first 在01-01到03-31日，分析volume日平均量
+        # analysis_secord 在04-01到07-04日，大于volume日均量、最大量的日期
+        # analysis_three 在07-05到-12-31日，大于中的最大量的日期
 
-    	pass
+        self.ayalysis_first_volume = self.analysis_first['volume'].mean()
+        for i in nrow(self.analysis_secord):
+            if self.analysis_secord['volume'] > self.ayalysis_first_volume:
+                print self.analysis_secord
+    	
 
 if __name__ == '__main__':
 
