@@ -7,7 +7,7 @@ import numpy as np
 
 dates=pd.date_range('20170729',periods=6)
 df = pd.DataFrame(np.random.randn(6,4),index=dates,columns=list('ABCD'))
-#原始值
+#原始值	
 print '原始值',df
 #Rows where the column col is greater than 0.5
 print '小于0.5',df[df[1:3] < 0.5]

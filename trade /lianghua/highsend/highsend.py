@@ -6,6 +6,17 @@ import time
 import datetime 
 from functools import reduce 
 
+def init(context):
+	pass
+
+import talib
+import numpy as np
+import math
+import pandas
+import time 
+import datetime 
+from functools import reduce 
+
 #init方法是您的初始化逻辑，context对象可以在任何函数之间传递
 def init(context): 
     #滑点默认值为2‰
@@ -38,7 +49,7 @@ def option_stock(context,data_dict):
 
 #策略买入信号函数
 def buy_stock(context, stock):
-    context.percentage = 1
+    context.percentage = 1  #设置单支股票最大买入仓位
     stock_buy_num = 10 #最多买入股票数量
     stock_percentage = 0.99/stock_buy_num  #每支股票买入的最大仓位
     if len(context.portfolio.positions) < stock_buy_num:
@@ -52,15 +63,29 @@ def sell_stock(context,stock_list,data_dict):
         if not (stock in stock_list):
            order_target_value(stock,0)  #如果不在股票列表中则全部卖出
 
-#选股函数
+# 高转送可能性股票
+# pe_ratio_ttm 市盈率小于15
+# market_cap_2 总市值超过10亿
+# book_value_per_share 每股净资产BPS大于5
+# earnings_per_share 基本每股收益EPS大于1
+# inc_profit_before_tax 利润总额(同比增长率) 50%
 def choose_stock_finance():
     dataframe = get_fundamentals(
      query(
-         
+         fundamentals.equity_valuation_indicator.market_cap_2, fundamentals.financial_analysis_indicator.book_value_per_share, fundamentals.financial_analysis_indicator.earnings_per_share, fundamentals.financial_analysis_indicator.inc_profit_before_tax, fundamentals.equity_valuation_indicator.pe_ratio_ttm
      ).filter(
-         fundamentals.macd.cross
+         fundamentals.equity_valuation_indicator.market_cap_2 > 1000000000
+     ).filter(
+         fundamentals.financial_analysis_indicator.book_value_per_share > 5
+     ).filter(
+         fundamentals.financial_analysis_indicator.earnings_per_share > 1
+     ).filter(
+         fundamentals.financial_analysis_indicator.inc_profit_before_tax > 50
+     ).filter(
+         fundamentals.equity_valuation_indicator.pe_ratio_ttm < 15
      )
     )
     stock_list = dataframe.columns.values
     return stock_list
-    
+
+  

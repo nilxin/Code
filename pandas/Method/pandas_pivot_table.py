@@ -12,7 +12,7 @@ df = pd.DataFrame({'A' : ['one', 'one', 'two', 'three'] * 3,
 'D' : np.random.randint(12),'E' : np.random.randint(12)})
 print '原始值\n',df
 #将DataFrame转换成一个table视图，以D作为数值域，A,B为行，C为列的数据视图
-print '以D作为数值域，A,B为行，C为列的数据视图\n', pd.pivot_table(df,index=['A', 'B'], columns=['C'], values='D')
+print '以D作为数值域，A,B为行，C为列的透视表\n', pd.pivot_table(df,index=['A', 'B'], columns=['C'], values='D')
 table = pd.pivot_table(df,index=['A', 'B'], columns=['C'], values='D')
 #aggfunc 可以跟一个或多个计算能力函数，如果是多个则可以使用[]进行分别计算。
     #aggfunc单个计算的方式：aggfunc=np.sum对透视表中指定列进行sum操作，可在手册中查询numpy的属性
