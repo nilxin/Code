@@ -34,9 +34,10 @@ class lianghua_trade_300470(object):
         # analysis_three 在07-05到-12-31日，大于中的最大量的日期
 
         self.ayalysis_first_volume = self.analysis_first['volume'].mean()
-        for i in nrow(self.analysis_secord):
-            if self.analysis_secord['volume'] > self.ayalysis_first_volume:
-                print self.analysis_secord
+        for i in self.analysis_secord.index:
+            print i
+            if self.analysis_secord['volume'].values > self.ayalysis_first_volume:
+                print self.analysis_secord.loc[i]
     	
 
 if __name__ == '__main__':
