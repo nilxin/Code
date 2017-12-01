@@ -19,15 +19,13 @@ class lianghua_trade_300470(object):
 
         # analysisDataFrame获取要分析的值，将数据机型切片，获取需要的列open、close、volume、price_change，并将数据切分为：
             
-        analysis_first = ts.get_hist_data('300470','2016-01-01','2016-03-31')
-        analysis_secord = ts.get_hist_data('300470','2016-04-01','2016-07-04')
+        analysis_first = ts.get_hist_data('300470','2016-01-01','2016-02-29')
+        analysis_secord = ts.get_hist_data('300470','2016-03-01','2016-07-04')
         analysis_three = ts.get_hist_data('300470','2016-07-05','2016-12-31')
 
         self.analysis_first = analysis_first.loc[:,['open','close','volume','price_change']]
         self.analysis_secord = analysis_secord.loc[:,['open','close','volume','price_change']]
         self.analysis_three = analysis_three.loc[:,['open','close','volume','price_change']]
-        self.analysis_concat_1A2 = self.analysis_secord.append(self.analysis_first)
-        print self.analysis_concat_1A2
 
     #交易量分析
     def tradeVolume(self):
@@ -36,22 +34,25 @@ class lianghua_trade_300470(object):
 
         # analysis_first 在01-01到03-31日，分析volume日平均量
         self.analysis_first_volume_mean = self.analysis_first['volume'].mean()
+        print '01-01到03-31日%s\n' % (self.analysis_first_volume_mean)
 
         # analysis_secord 在04-01到07-04日
-            # 计算平均成交量
+            # 计算volume平均成交量
             # 大于volume日均量、最大量的日期
-            # 成交量大于日均量前10的成交日
-        print '04-01到07-04的平均成交量：%s\n' % (self.analysis_secord['volume'].mean())
+        self.analysis_secord_volume_mean = self.analysis_secord['volume'].mean()
+        print '04-01到07-04的平均成交量：%s\n' % (self.analysis_secord_volume_mean)
 
-        self.analysis_secord_averagetrade = self.analysis_secord[self.analysis_secord.volume>self.analysis_first_volume_mean]
-        print '04-01到07-04大于%s日均成交量的天：%s\n' % (self.analysis_secord['volume'].mean(),self.analysis_secord_averagetrade)
+        print '04-01到07-04大于01-01到03-31日平均成交量的天：%s\n' % (self.analysis_secord[self.analysis_secord.volume>self.analysis_first_volume_mean])
 
-        print '04-01到07-04日大于日均成交量的前10成交日%s\n' % (self.analysis_secord_averagetrade.sort_values(by=['volume']).tail(10))
+        print '04-01到07-04大于期间平均量的天：%s\n' % (self.analysis_secord[self.analysis_secord.volume>self.analysis_secord_volume_mean])
 
-        print '04-01到07-04登记日趋势百分比：%s %% \n' % ( round( ((self.analysis_concat_1A2.head(1)[['close']].values- self.analysis_concat_1A2.tail(1)[['close']])/self.analysis_concat_1A2.head(1)[['close']].values*100).values[0][0],2) )
+        self.analysis_secord_volume_count = self.analysis_secord[self.analysis_secord.volume>self.analysis_secord['volume'].max()]
 
+        print 'test\n',self.analysis_secord_volume_count
+        print '04-01到07-04最大成交量日期排名取前10条：%s\n' % (self.analysis_secord_volume_count.sort_values(by=['volume']))
         
         # analysis_three 在07-05到-12-31日，大于中的最大量的日期
+
 
     	
 
